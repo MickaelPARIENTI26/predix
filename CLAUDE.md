@@ -41,7 +41,13 @@ npm run db:push / db:types
 ```
 
 ## Phase actuelle
-F0 — Fondations : TERMINÉ (2026-07-12). Prod : https://predix-taupe.vercel.app · repo : github.com/MickaelPARIENTI26/predix · Supabase dev ryvrxzyztwtjcanlntbj / prod poticedueaaosqvkjrug. Prochain sprint : F1 — Auth & profils (penser : SMTP custom, le service email intégré de Supabase est limité à quelques envois/heure).
+F1 — Auth & profils : TERMINÉ (2026-07-12). Auth email+mot de passe, trigger de création de profil, middleware `proxy.ts`, pages login/signup/profile, flux prouvé en navigateur. Décision en attente côté Mickael : confirmation email (dev a `mailer_autoconfirm: false` + email rate-limité) → désactiver la confirmation au Dashboard OU SMTP custom. Utilisateur démo dev : `demo@predix.app` / `predixdemo123`. Prod : https://predix-taupe.vercel.app · repo github.com/MickaelPARIENTI26/predix · Supabase dev ryvrxzyztwtjcanlntbj / prod poticedueaaosqvkjrug. Prochain sprint : F2 — Compétitions & données de jeu.
+
+## Auth (F1) — points clés
+- Une seule convention de session : `proxy.ts` (ex-middleware) appelle `updateSession` (`lib/supabase/middleware.ts`). Ne pas recréer un `middleware.ts`.
+- `getUser()` (vérifie le JWT), jamais `getSession()`. Pages protégées : `requireUser()` en tête.
+- Profil créé par trigger DB, jamais par le code applicatif.
+- Tester l'inscription avec un VRAI domaine email (GoTrue rejette les domaines sans MX).
 Plan complet des sprints : voir `docs/decisions.md`.
 
 ## DÉMARRAGE DE SESSION

@@ -1,34 +1,37 @@
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { buttonVariants } from "@/components/ui/button";
+import { getUser } from "@/lib/auth/user";
 
-export default function Home() {
+export default async function Home() {
+  const user = await getUser();
+
   return (
     <main className="flex min-h-[100dvh] flex-col items-center justify-center gap-8 p-6">
       <div className="flex flex-col items-center gap-2 text-center">
-        <Badge variant="secondary">F0 — Fondations</Badge>
+        <Badge variant="secondary">F1 — Auth &amp; profils</Badge>
         <h1 className="text-5xl font-bold tracking-tight">Predix</h1>
         <p className="text-muted-foreground max-w-md text-balance">
           Pronostics entre amis. Chaque prono est horodaté, versionné et
           verrouillé au coup d&apos;envoi.
         </p>
       </div>
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>En construction</CardTitle>
-          <CardDescription>
-            Prochaine étape : authentification et profils (sprint F1).
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="text-muted-foreground text-sm">
-          Cible : Euro 2028 — avec des compétitions de test avant.
-        </CardContent>
-      </Card>
+      <div className="flex flex-col items-center gap-3">
+        {user ? (
+          <Link href="/profile" className={buttonVariants()}>
+            Aller à mon profil
+          </Link>
+        ) : (
+          <div className="flex gap-3">
+            <Link href="/signup" className={buttonVariants()}>
+              Créer un compte
+            </Link>
+            <Link href="/login" className={buttonVariants({ variant: "outline" })}>
+              Se connecter
+            </Link>
+          </div>
+        )}
+      </div>
     </main>
   );
 }

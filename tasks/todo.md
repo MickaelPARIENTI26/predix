@@ -1,6 +1,17 @@
 # Predix — Todo
 
-## Sprint en cours : (aucun — F0 clôturé, F1 en attente de lancement)
+## F1 — Auth & profils ✅ (clôturé le 2026-07-12)
+
+- [x] Migration 0002 : trigger `handle_new_user` (security definer) — profil créé atomiquement à l'inscription
+- [x] Middleware `@supabase/ssr` (fichier `proxy.ts` — nouvelle convention Next 16) : refresh session + protection de routes
+- [x] Auth email + mot de passe : Server Actions `signIn/signUp/signOut/updateDisplayName`, Zod des 2 côtés
+- [x] Pages `/login`, `/signup`, `/profile` (protégée), route `/auth/confirm`, landing mise à jour
+- [x] Type `Database` généré câblé dans les clients Supabase
+- [x] Tests : 12 unitaires (dont schémas auth) + 6 e2e (rendu, validation client, protection de route)
+- [x] Migration 0002 appliquée sur dev + trigger vérifié (insert réel → profil auto-créé)
+- [x] Flux réel prouvé dans le navigateur : login → /profile → modif nom (persistée + header rafraîchi) → logout → redirection
+- [ ] **DÉCISION Mickael** : confirmation email — le projet dev a `mailer_autoconfirm: false` (confirmation ON) + service email limité. Choisir : (a) désactiver la confirmation (Dashboard → Auth → Providers → Email → décocher "Confirm email") pour les tests, ou (b) configurer un SMTP custom (Resend). Sans l'un des deux, chaque inscription réelle attend un email (rate-limité).
+- [ ] (option) `supabase login` une fois pour éviter de passer le mot de passe DB à chaque migration
 
 ## F0 — Fondations ✅ (clôturé le 2026-07-12)
 
@@ -26,7 +37,6 @@
 
 ## Sprints suivants (plan validé le 2026-07-12, détail dans docs/decisions.md)
 
-- F1 Auth & profils (SMTP custom — service email intégré limité)
 - F2 Compétitions & données de jeu (CRUD, import CSV, seed réaliste, bracket placeholders)
 - F3 CŒUR PRONOSTICS — event log + RPC unique (le sprint critique)
 - F4 Résultats & moteur de points (machine d'état résultat, barème versionné, recalcul idempotent)
