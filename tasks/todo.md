@@ -14,9 +14,11 @@
 - [x] README (workflow migrations sans Docker, environnements), CLAUDE.md, docs/decisions.md
 - [x] `instrumentation.ts` — la garde env prod↛dev s'exécute réellement au boot serveur
 - [x] Revue adversariale du scaffold (2 agents) — blocker GRANTs corrigé + 9 findings traités
-- [ ] **Côté Mickael** : créer les 2 projets Supabase (`predix-dev`, `predix-prod`), remplir `.env.local`, vérifier `SHOW server_version;` = Postgres 17 (sinon ajuster `major_version` dans config.toml)
-- [ ] **Côté Mickael** : créer le repo GitHub + push, connecter Vercel (preview→dev avec SUPABASE_ENV=dev, prod→prod avec SUPABASE_ENV=prod)
-- [ ] Appliquer la migration sur dev (`supabase link --project-ref <ref-dev>` + `npm run db:push`) puis `npm run db:types` — c'est CE pas qui prouve le pipeline
+- [x] Projets Supabase créés : `predix-dev` (ryvrxzyztwtjcanlntbj) + `predix-prod` (poticedueaaosqvkjrug) ; `.env.local` rempli — 2026-07-12
+- [x] Repo GitHub (MickaelPARIENTI26/predix) poussé ; projet Vercel `predix` lié au repo ; 6 env vars posées (production→prod, preview→dev) — 2026-07-12
+- [ ] Appliquer la migration sur dev (`supabase db push --db-url ...` — besoin du mot de passe DB dev) puis `npm run db:types`
+- [ ] Vérifier `SHOW server_version;` = Postgres 17 sur les deux projets (sinon ajuster `major_version` dans config.toml)
+- [ ] Vérifier le déploiement production Vercel (déclenché par ce push)
 
 ## Sprints suivants (plan validé le 2026-07-12, détail dans docs/decisions.md)
 
