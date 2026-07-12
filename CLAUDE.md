@@ -41,7 +41,7 @@ npm run db:push / db:types
 ```
 
 ## Phase actuelle
-Sprint F0 — code terminé ; en attente côté utilisateur : création des 2 projets Supabase, repo GitHub + Vercel, premier `db:push` sur dev + `db:types`. Prochain sprint : F1 — Auth & profils.
+F0 — Fondations : TERMINÉ (2026-07-12). Prod : https://predix-taupe.vercel.app · repo : github.com/MickaelPARIENTI26/predix · Supabase dev ryvrxzyztwtjcanlntbj / prod poticedueaaosqvkjrug. Prochain sprint : F1 — Auth & profils (penser : SMTP custom, le service email intégré de Supabase est limité à quelques envois/heure).
 Plan complet des sprints : voir `docs/decisions.md`.
 
 ## DÉMARRAGE DE SESSION

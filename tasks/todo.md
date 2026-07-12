@@ -1,6 +1,8 @@
 # Predix — Todo
 
-## Sprint en cours : F0 — Fondations
+## Sprint en cours : (aucun — F0 clôturé, F1 en attente de lancement)
+
+## F0 — Fondations ✅ (clôturé le 2026-07-12)
 
 - [x] Scaffold Next.js (App Router, TS strict, Tailwind 4) + shadcn/ui
 - [x] Dépendances : zod, @supabase/supabase-js, @supabase/ssr, vitest, playwright, supabase CLI
@@ -16,9 +18,11 @@
 - [x] Revue adversariale du scaffold (2 agents) — blocker GRANTs corrigé + 9 findings traités
 - [x] Projets Supabase créés : `predix-dev` (ryvrxzyztwtjcanlntbj) + `predix-prod` (poticedueaaosqvkjrug) ; `.env.local` rempli — 2026-07-12
 - [x] Repo GitHub (MickaelPARIENTI26/predix) poussé ; projet Vercel `predix` lié au repo ; 6 env vars posées (production→prod, preview→dev) — 2026-07-12
-- [ ] Appliquer la migration sur dev (`supabase db push --db-url ...` — besoin du mot de passe DB dev) puis `npm run db:types`
-- [ ] Vérifier `SHOW server_version;` = Postgres 17 sur les deux projets (sinon ajuster `major_version` dans config.toml)
-- [ ] Vérifier le déploiement production Vercel (déclenché par ce push)
+- [x] Migration appliquée sur dev, vérifiée (`migration list` : local = remote = 20260712185223 ; sonde REST : table présente, RLS actif) — 2026-07-12
+- [x] `lib/supabase/types.gen.ts` généré depuis le schéma réel, lint + typecheck verts — 2026-07-12
+- [x] CI GitHub verte (échec initial `npm ci` corrigé : lockfile complété via npm@10 + CI sur Node 24) — 2026-07-12
+- [x] Production Vercel vérifiée : https://predix-taupe.vercel.app (HTTP 200, garde env OK au boot) — 2026-07-12
+- [x] `major_version` config.toml : sans objet dans notre workflow (utilisé seulement par `db diff`, exclu sans Docker) — noté dans l'en-tête du fichier
 
 ## Sprints suivants (plan validé le 2026-07-12, détail dans docs/decisions.md)
 
