@@ -1,1 +1,52 @@
-@AGENTS.md
+# Predix — Claude Code Instructions
+
+## Projet
+App privée de pronostics sportifs entre amis (~100 utilisateurs, cible Euro 2028, compétitions de test avant). Un organisateur crée une compétition (code d'invitation), saisit équipes/groupes/matchs, configure le barème et saisit les résultats. Les participants pronostiquent : scores, classements de groupes, équipes qualifiées, bonus (buteur, vainqueur — passeur à confirmer). Classement général + ajustements manuels motivés. Pas de WhatsApp en v1 (canal de notification à décider plus tard).
+
+**PRIORITÉ ABSOLUE : fiabilité et auditabilité de l'enregistrement des pronostics.** Les 7 questions d'audit (quoi, quand exactement, combien de modifications, dernier valide avant verrou, tentatives tardives, échecs, conflits deux-appareils) doivent toujours avoir une réponse prouvable en base.
+
+## Documentation
+LIRE AVANT TOUT TRAVAIL :
+- `docs/decisions.md` — décisions d'architecture, conception du cœur critique (event log + RPC unique), plan de sprints F0–F10
+- `tasks/todo.md` — état actuel
+- `tasks/lessons.md` — leçons à appliquer
+
+## Stack
+Next.js App Router · TypeScript strict · Tailwind CSS 4 · shadcn/ui · Supabase (Postgres, Auth, Realtime, Edge Functions, Cron) · Vercel · Zod · Vitest · Playwright.
+INTERDIT : backend séparé, Express/NestJS, MongoDB, Firebase, Docker (v1), Redis, microservices.
+
+## Règles critiques
+1. **Une seule porte d'écriture pour les pronostics** : la fonction Postgres `save_prediction` (RPC). Jamais d'INSERT/UPDATE direct sur `prediction_events` / `predictions_current` — ni dans le code, ni dans un script, ni via service_role.
+2. **`prediction_events` est append-only** — jamais d'UPDATE/DELETE, même pour corriger. Une correction = un nouvel événement.
+3. **Une seule horloge : le `now()` de Postgres.** Jamais l'heure du client dans une décision. Jamais de paramètre d'horloge de test dans une fonction de prod (les tests contrôlent les fixtures `kickoff_at`).
+4. **RLS deny-all dans la même migration** que toute création de table.
+5. **TypeScript strict** — pas de `any`, pas de `@ts-ignore`.
+6. **Zod des deux côtés** — toute entrée validée client ET serveur.
+7. **timestamptz UTC partout**, affichage dans le fuseau du navigateur.
+8. **Mobile-first** — les copains pronostiquent depuis leur téléphone.
+9. **Rejets métier = retour de statut, jamais RAISE** dans `save_prediction` (sinon l'événement de preuve est rollbacké).
+10. **Pas de sur-architecture** — simplicité d'abord, Postgres fait tout (verrous, cron, audit).
+
+## Environnements
+Deux projets Supabase cloud : `predix-dev` (local + previews) et `predix-prod` (production). Pas de Docker : migrations SQL manuscrites appliquées via `supabase db push` (voir README). `lib/env.ts` refuse un build prod branché sur dev.
+
+## Commandes
+```bash
+npm run dev / build / lint / typecheck
+npm run test / test:watch / test:e2e
+npm run db:push:dev / db:types
+```
+
+## Phase actuelle
+Sprint F0 — Fondations (terminé). Prochain : F1 — Auth & profils.
+Plan complet des sprints : voir `docs/decisions.md`.
+
+## DÉMARRAGE DE SESSION
+1. Lire `tasks/lessons.md` — appliquer toutes les leçons avant de toucher quoi que ce soit
+2. Lire `tasks/todo.md` — comprendre l'état actuel
+
+## WORKFLOW
+- Planifier d'abord (plan dans `tasks/todo.md`), avancer sprint par sprint, validation utilisateur entre les sprints
+- Ne jamais marquer terminé sans preuve (tests verts, comportement vérifié)
+- Après toute correction : ajouter une ligne à `tasks/lessons.md` (format : date | problème | règle)
+- Sous-agents pour les tâches lourdes, contexte principal propre
