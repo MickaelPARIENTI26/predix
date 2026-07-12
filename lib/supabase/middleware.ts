@@ -52,15 +52,28 @@ export async function updateSession(
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("next", pathname);
-    return NextResponse.redirect(url);
+    return redirectPreservingCookies(url, response);
   }
 
   if (user && AUTH_PATHS.includes(pathname)) {
     const url = request.nextUrl.clone();
     url.pathname = "/profile";
     url.search = "";
-    return NextResponse.redirect(url);
+    return redirectPreservingCookies(url, response);
   }
 
   return response;
+}
+
+// A redirect must carry the session cookies that getUser() may have rotated
+// onto `response`, or the browser keeps a stale token and silently logs out.
+function redirectPreservingCookies(
+  url: URL,
+  response: NextResponse
+): NextResponse {
+  const redirectResponse = NextResponse.redirect(url);
+  response.cookies.getAll().forEach((cookie) => {
+    redirectResponse.cookies.set(cookie);
+  });
+  return redirectResponse;
 }

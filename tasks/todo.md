@@ -10,6 +10,7 @@
 - [x] Tests : 12 unitaires (dont schémas auth) + 6 e2e (rendu, validation client, protection de route)
 - [x] Migration 0002 appliquée sur dev + trigger vérifié (insert réel → profil auto-créé)
 - [x] Flux réel prouvé dans le navigateur : login → /profile → modif nom (persistée + header rafraîchi) → logout → redirection
+- [x] Revue adversariale sécurité (3 agents) — 3 findings *important* corrigés : open-redirect backslash (helper `safeNextPath` + tests), cookies session perdus sur redirect middleware, trigger bloquant sur email local vide (migration 0003) ; + durcissements (NEXT_PUBLIC_SITE_URL, on-conflict)
 - [ ] **DÉCISION Mickael** : confirmation email — le projet dev a `mailer_autoconfirm: false` (confirmation ON) + service email limité. Choisir : (a) désactiver la confirmation (Dashboard → Auth → Providers → Email → décocher "Confirm email") pour les tests, ou (b) configurer un SMTP custom (Resend). Sans l'un des deux, chaque inscription réelle attend un email (rate-limité).
 - [ ] (option) `supabase login` une fois pour éviter de passer le mot de passe DB à chaque migration
 

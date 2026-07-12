@@ -4,6 +4,8 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { getEnv } from "@/lib/env";
+import { safeNextPath } from "@/lib/auth/safe-redirect";
 import {
   loginSchema,
   signupSchema,
@@ -14,14 +16,11 @@ export type ActionResult =
   | { ok: true }
   | { ok: false; error: string };
 
-// Only allow same-app relative redirects (no open-redirect via ?next=…).
-function safeNext(next: unknown): string {
-  return typeof next === "string" && next.startsWith("/") && !next.startsWith("//")
-    ? next
-    : "/profile";
-}
-
+// Prefer a trusted, configured origin for emailed links; fall back to request
+// headers only for local dev (never trust x-forwarded-host for security).
 async function siteOrigin(): Promise<string> {
+  const configured = getEnv().NEXT_PUBLIC_SITE_URL;
+  if (configured) return configured.replace(/\/$/, "");
   const h = await headers();
   const proto = h.get("x-forwarded-proto") ?? "https";
   const host = h.get("x-forwarded-host") ?? h.get("host");
@@ -43,7 +42,7 @@ export async function signIn(
 
   if (error) return { ok: false, error: "Email ou mot de passe incorrect." };
 
-  redirect(safeNext(next));
+  redirect(safeNextPath(next));
 }
 
 export type SignUpResult =

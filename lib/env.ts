@@ -12,6 +12,9 @@ import { z } from "zod";
 const envSchema = z.object({
   NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(20),
+  // Trusted public origin (e.g. https://predix.app) for emailed links. When
+  // unset, actions fall back to request headers (fine for local dev).
+  NEXT_PUBLIC_SITE_URL: z.string().url().optional(),
   // Which Supabase project these credentials belong to (set per Vercel environment).
   SUPABASE_ENV: z.enum(["dev", "prod"]).default("dev"),
   // Provided by Vercel at build/runtime; absent locally.
@@ -36,6 +39,7 @@ export function getEnv(): Env {
   cached ??= parseEnv({
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
     SUPABASE_ENV: process.env.SUPABASE_ENV,
     VERCEL_ENV: process.env.VERCEL_ENV,
   });
