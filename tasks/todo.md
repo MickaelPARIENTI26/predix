@@ -7,14 +7,16 @@
 - [x] `lib/env.ts` — validation Zod + garde prod↛dev
 - [x] Clients Supabase (`lib/supabase/client.ts`, `server.ts`)
 - [x] Coquille UI (page d'accueil Predix)
-- [x] Première migration (`profiles`, RLS deny-all + policies) — pipeline prouvé sur dev à la création du projet
+- [x] Première migration écrite (`profiles` : RLS + policies + GRANTs explicites) — PAS encore appliquée, preuve au premier `db:push` sur dev
 - [x] Squelette `supabase/seed.sql`
-- [x] Vitest (4 tests env) + Playwright (1 smoke)
-- [x] CI GitHub Actions (lint, typecheck, unit, e2e)
+- [x] Vitest (4 tests env) + Playwright (1 smoke, port dédié 3100)
+- [x] CI GitHub Actions (lint, typecheck, unit, e2e + upload du rapport Playwright en échec)
 - [x] README (workflow migrations sans Docker, environnements), CLAUDE.md, docs/decisions.md
-- [ ] **Côté Mickael** : créer les 2 projets Supabase (`predix-dev`, `predix-prod`), remplir `.env.local`
-- [ ] **Côté Mickael** : créer le repo GitHub + push, connecter Vercel (preview→dev, prod→prod)
-- [ ] Appliquer la migration sur dev (`supabase link` + `npm run db:push:dev`) puis `npm run db:types`
+- [x] `instrumentation.ts` — la garde env prod↛dev s'exécute réellement au boot serveur
+- [x] Revue adversariale du scaffold (2 agents) — blocker GRANTs corrigé + 9 findings traités
+- [ ] **Côté Mickael** : créer les 2 projets Supabase (`predix-dev`, `predix-prod`), remplir `.env.local`, vérifier `SHOW server_version;` = Postgres 17 (sinon ajuster `major_version` dans config.toml)
+- [ ] **Côté Mickael** : créer le repo GitHub + push, connecter Vercel (preview→dev avec SUPABASE_ENV=dev, prod→prod avec SUPABASE_ENV=prod)
+- [ ] Appliquer la migration sur dev (`supabase link --project-ref <ref-dev>` + `npm run db:push`) puis `npm run db:types` — c'est CE pas qui prouve le pipeline
 
 ## Sprints suivants (plan validé le 2026-07-12, détail dans docs/decisions.md)
 

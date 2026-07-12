@@ -1,3 +1,10 @@
+# ⚠️ Template de stack locale — Predix est cloud-only (pas de Docker en v1).
+# Ne JAMAIS lancer `supabase config push` : le bloc [auth] ci-dessous contient
+# des valeurs de dev local (confirmations désactivées, mot de passe 6 chars,
+# site_url 127.0.0.1) qui écraseraient la config du projet lié — y compris prod.
+# Seuls comptent pour le workflow cloud : project_id, [db] major_version
+# (vérifier `SHOW server_version;` sur les deux projets à leur création).
+#
 # For detailed configuration reference documentation, visit:
 # https://supabase.com/docs/guides/local-development/cli/config
 # A string used to distinguish different Supabase projects on the same host. Defaults to the

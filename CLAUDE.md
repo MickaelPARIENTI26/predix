@@ -28,17 +28,20 @@ INTERDIT : backend séparé, Express/NestJS, MongoDB, Firebase, Docker (v1), Red
 10. **Pas de sur-architecture** — simplicité d'abord, Postgres fait tout (verrous, cron, audit).
 
 ## Environnements
-Deux projets Supabase cloud : `predix-dev` (local + previews) et `predix-prod` (production). Pas de Docker : migrations SQL manuscrites appliquées via `supabase db push` (voir README). `lib/env.ts` refuse un build prod branché sur dev.
+Deux projets Supabase cloud : `predix-dev` (local + previews) et `predix-prod` (production). Pas de Docker : migrations SQL manuscrites appliquées via `npm run db:push` sur le projet LIÉ — vérifier le ref affiché ; jamais `supabase config push` (voir en-tête de `supabase/config.toml`). `lib/env.ts` refuse au boot (via `instrumentation.ts`) un déploiement prod branché sur dev.
+
+## Règle SQL supplémentaire
+Les policies RLS ne confèrent aucun privilège : chaque migration pose ses **GRANTs explicites** (column-level quand pertinent) dans le même fichier. Écrire `(select auth.uid())`, jamais `auth.uid()` nu, dans les policies.
 
 ## Commandes
 ```bash
 npm run dev / build / lint / typecheck
 npm run test / test:watch / test:e2e
-npm run db:push:dev / db:types
+npm run db:push / db:types
 ```
 
 ## Phase actuelle
-Sprint F0 — Fondations (terminé). Prochain : F1 — Auth & profils.
+Sprint F0 — code terminé ; en attente côté utilisateur : création des 2 projets Supabase, repo GitHub + Vercel, premier `db:push` sur dev + `db:types`. Prochain sprint : F1 — Auth & profils.
 Plan complet des sprints : voir `docs/decisions.md`.
 
 ## DÉMARRAGE DE SESSION

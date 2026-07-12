@@ -17,7 +17,7 @@ npm run lint         # ESLint
 npm run typecheck    # tsc --noEmit
 npm run test         # tests unitaires (Vitest)
 npm run test:e2e     # tests e2e (Playwright)
-npm run db:push:dev  # applique les migrations au projet Supabase lié
+npm run db:push      # applique les migrations au projet Supabase LIÉ (le ref cible est affiché avant le push)
 npm run db:types     # régénère lib/supabase/types.gen.ts
 ```
 
@@ -30,19 +30,20 @@ Deux projets Supabase **cloud** (pas de stack locale — Docker est exclu de la 
 | Local + Vercel preview | `predix-dev` | `dev` |
 | Vercel production | `predix-prod` | `prod` |
 
-`lib/env.ts` (Zod) **refuse au démarrage** un déploiement production branché sur le projet dev.
+`lib/env.ts` (Zod) **refuse au démarrage du serveur** un déploiement production branché sur le projet dev — le contrôle est déclenché par `instrumentation.ts` (hook Next.js exécuté au boot, y compris sur Vercel).
 
 Setup local : copier `.env.example` vers `.env.local` et remplir depuis le dashboard Supabase du projet dev.
 
 ## Migrations (workflow sans Docker)
 
 1. Écrire le SQL à la main dans `supabase/migrations/<timestamp UTC>_<nom>.sql`.
-2. Appliquer sur dev : `npx supabase link --project-ref <ref-dev>` puis `npm run db:push:dev`.
+2. Appliquer sur dev : `npx supabase link --project-ref <ref-dev>` puis `npm run db:push` — **vérifier le ref affiché avant de confirmer** : le push cible toujours le projet actuellement lié.
 3. Régénérer les types : `npm run db:types` (committé).
-4. À la release : `supabase link` vers prod puis `db push` (jamais de seed sur prod).
+4. À la release : `supabase link` vers prod puis `npm run db:push` (jamais de seed sur prod), puis re-`link` vers dev immédiatement.
+5. Ne **jamais** lancer `supabase config push` (voir l'avertissement en tête de `supabase/config.toml`).
 
 Conventions (détail dans `docs/decisions.md`) :
-- Toute migration qui crée une table **active RLS deny-all dans le même fichier**.
+- Toute migration qui crée une table **active RLS deny-all dans le même fichier**, et pose ses **GRANTs explicites** au même endroit (les policies RLS filtrent les lignes mais ne confèrent aucun privilège — les nouvelles tables ne sont plus auto-exposées aux rôles API).
 - Tout horodatage est `timestamptz` (UTC) ; les comparaisons de verrou se font uniquement avec le `now()` de Postgres ; l'affichage se fait dans le fuseau du navigateur.
 - Les tables de pronostics n'acceptent **aucune écriture directe** : une seule porte, la fonction RPC `save_prediction` (à partir du sprint F3).
 
