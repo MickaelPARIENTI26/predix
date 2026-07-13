@@ -41,6 +41,8 @@ npm run db:push / db:types
 ```
 
 ## Phase actuelle
+F4 — Résultats & moteur de points : TERMINÉ (2026-07-13). Porte unique auditée `set_match_result` (résultats — droit d'écriture direct sur home_score/away_score/status révoqué), barème configurable `set_scoring_rules`, recalcul idempotent `recompute_competition_scores`, `admin_events` append-only, cache `scores`. UI `/results` (orga) + `/leaderboard` (tous). Migration 0008. Vérifié SQL + navigateur. **À venir (sprint API dédié)** : auto-fetch résultats via Cron+Edge Function (football-data.org gratuit couvre Euro/CdM ; API-Football gratuit 100 req/j) branché sur la MÊME porte `set_match_result` (ajoutera une branche service_role). Prochain sprint standard : **F5 — Classements de groupes & phase finale**. Historique :
+
 F3 — Cœur pronostics : TERMINÉ (2026-07-13). Porte d'écriture unique `save_prediction` (RPC), `prediction_events` append-only + `predictions_current`, verrouillage au coup d'envoi, idempotence, conflit deux-appareils, RLS reveal-after-lock. Migration 0007. UI `/competitions/[id]/predict`. Vérifié en SQL + navigateur (save/update/conflit). Prochain : **F4 — Résultats & moteur de points** (saisie de résultats, barème versionné, recalcul idempotent, classement). Historique :
 
 F2 — Compétitions & données de jeu : TERMINÉ (2026-07-13). Schéma générique (migration 0004), RPCs create/join, RLS membre/organisateur, page Gérer + génération d'un tournoi de test en 1 clic. Users test dev : demo@predix.app/predixdemo123 (orga), ami@predix.app/amipredix123 (joueur). CSV import reporté à la montée sur l'Euro complet. Prochain : **F3 — Cœur pronostics** (event log + RPC unique `save_prediction`). Historique :

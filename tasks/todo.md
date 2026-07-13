@@ -1,5 +1,15 @@
 # Predix — Todo
 
+## F4 — Résultats & moteur de points ✅ (clôturé le 2026-07-13)
+
+- [x] Migration 0008 : `scoring_rules` (barème) + `scores` (cache classement) + `admin_events` (audit append-only) + `set_match_result` (porte unique auditée) + `set_scoring_rules` + `recompute_competition_scores` (idempotent)
+- [x] Revue adversariale (10 findings, dont 1 BLOCKER cast `::int` sur payload fractionnaire) — tout corrigé avant push
+- [x] Tests SQL VERTS : exact/bon/raté, correction re-score, blocker fractionnaire, journal admin, changement de barème, **porte unique** (UPDATE direct d'un résultat → permission denied)
+- [x] UI : `/results` (organisateur : saisie/correction résultats + barème), `/leaderboard` (tous : classement)
+- [x] Vérification navigateur bout en bout : résultat 5-2 saisi → classement « Mika Démo 3 pts (1 exact) » ; persistance + audit vérifiés
+- [x] 5 tests unitaires barème (40 total)
+- [ ] (sprint API dédié plus tard) auto-fetch résultats via Cron + Edge Function (football-data.org gratuit couvre Euro/CdM) par la MÊME porte `set_match_result`
+
 ## F3 — Cœur pronostics ✅ (clôturé le 2026-07-13) — LE sprint critique
 
 - [x] Migration 0007 : `prediction_events` (append-only) + `predictions_current` (projection) + `save_prediction` RPC (porte unique) + helpers lock/competition + trigger immuabilité (BEFORE UPDATE) + RLS (events own-only, projection reveal-after-lock)
