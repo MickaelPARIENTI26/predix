@@ -1,5 +1,14 @@
 # Predix — Todo
 
+## F5 — Classements de groupes ✅ (clôturé le 2026-07-13)
+
+- [x] Migration 0010 : pronostics `group_ranking` (ordre des groupes) + `group_standings` (classement auto depuis résultats) + scoring `per_position` + validation à la porte + immunité recalcul (`try_uuid`)
+- [x] Revue adversariale — BLOCKER (payload trafiqué gelait le recalcul de toute la compét) neutralisé en double défense (validation `save_prediction` + `try_uuid`)
+- [x] Tests SQL : payload trafiqué → rejected_invalid, poison stocké → recalcul survit, classement + scoring combiné corrects
+- [x] UI : section « Classements des groupes » sur la page prono (dropdowns de position, verrou 1er match)
+- [x] Vérifié navigateur : Groupe A ordonné (France > Brésil > Argentine > Espagne) → Enregistré v1, stocké dans l'ordre
+- [ ] **Reporté (brique dédiée)** : pronostics d'équipes qualifiées / progression du tableau à élimination — nécessite la résolution du bracket (équipes fantômes du test ne se résolvent pas encore)
+
 ## F4 — Résultats & moteur de points ✅ (clôturé le 2026-07-13)
 
 - [x] Migration 0008 : `scoring_rules` (barème) + `scores` (cache classement) + `admin_events` (audit append-only) + `set_match_result` (porte unique auditée) + `set_scoring_rules` + `recompute_competition_scores` (idempotent)
