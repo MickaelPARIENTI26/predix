@@ -2,30 +2,30 @@ import { describe, expect, it } from "vitest";
 import { parseEnv } from "@/lib/env";
 
 const valid = {
-  NEXT_PUBLIC_SUPABASE_URL: "https://dev-project.supabase.co",
+  NEXT_PUBLIC_SUPABASE_URL: "https://project.supabase.co",
   NEXT_PUBLIC_SUPABASE_ANON_KEY: "a".repeat(40),
 };
 
 describe("parseEnv", () => {
-  it("accepts a valid dev configuration", () => {
+  it("accepts a valid configuration", () => {
     const env = parseEnv(valid);
-    expect(env.SUPABASE_ENV).toBe("dev");
+    expect(env.NEXT_PUBLIC_SUPABASE_URL).toBe("https://project.supabase.co");
   });
 
   it("rejects a missing Supabase URL", () => {
     expect(() =>
-      parseEnv({ NEXT_PUBLIC_SUPABASE_ANON_KEY: valid.NEXT_PUBLIC_SUPABASE_ANON_KEY })
+      parseEnv({
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: valid.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      })
     ).toThrow();
   });
 
-  it("rejects a production deployment wired to the dev project", () => {
-    expect(() =>
-      parseEnv({ ...valid, VERCEL_ENV: "production", SUPABASE_ENV: "dev" })
-    ).toThrow(/dev Supabase project/);
+  it("rejects a non-URL Supabase URL", () => {
+    expect(() => parseEnv({ ...valid, NEXT_PUBLIC_SUPABASE_URL: "nope" })).toThrow();
   });
 
-  it("accepts a production deployment wired to the prod project", () => {
-    const env = parseEnv({ ...valid, VERCEL_ENV: "production", SUPABASE_ENV: "prod" });
-    expect(env.SUPABASE_ENV).toBe("prod");
+  it("accepts an optional site URL", () => {
+    const env = parseEnv({ ...valid, NEXT_PUBLIC_SITE_URL: "https://predix.app" });
+    expect(env.NEXT_PUBLIC_SITE_URL).toBe("https://predix.app");
   });
 });

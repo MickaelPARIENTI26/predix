@@ -37,7 +37,7 @@ Limite assumée : une tentative qui n'atteint jamais Postgres ne laisse pas de t
 
 ## Environnements & workflow (pas de Docker en v1)
 
-Deux projets Supabase cloud : `predix-dev` (local + previews Vercel) et `predix-prod` (production). Pas de `supabase start` ni `db diff` : migrations SQL manuscrites, `supabase db push`, `gen types` committé. `lib/env.ts` refuse un build production branché sur dev (`SUPABASE_ENV`). Conventions : RLS deny-all dans la même migration que la table ; `timestamptz` UTC partout ; comparaison de verrou uniquement côté Postgres ; jamais de paramètre d'horloge de test dans une fonction de prod (les tests pilotent les fixtures `kickoff_at`).
+**Un seul environnement pendant la phase de test** (décidé 2026-07-13, sur demande de Mickael) : la séparation dev/prod ne sert à rien tant qu'il n'y a pas de vrais utilisateurs et ne créait que de la friction (2 bases à migrer, données de test éparpillées, l'URL de prod stable pointait sur une base vide). Donc une seule base Supabase (`predix-dev`, ryvrxzyztwtjcanlntbj) sert tout : local, previews, et l'URL de production (predix-taupe.vercel.app pointe dessus). Le projet `predix-prod` reste vide en réserve. **Au vrai lancement (Euro 2028)** : créer une base prod neuve, remettre la garde `lib/env.ts` (prod↛dev), migrer. Pas de `supabase start`/`db diff` (Docker exclu) : migrations SQL manuscrites, `supabase db push`, `gen types` committé. Conventions : RLS deny-all dans la même migration que la table ; `timestamptz` UTC partout ; comparaison de verrou uniquement côté Postgres ; jamais de paramètre d'horloge de test dans une fonction de prod (les tests pilotent les fixtures `kickoff_at`).
 
 ## Auth (F1)
 

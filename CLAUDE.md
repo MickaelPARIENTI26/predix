@@ -28,7 +28,7 @@ INTERDIT : backend séparé, Express/NestJS, MongoDB, Firebase, Docker (v1), Red
 10. **Pas de sur-architecture** — simplicité d'abord, Postgres fait tout (verrous, cron, audit).
 
 ## Environnements
-Deux projets Supabase cloud : `predix-dev` (local + previews) et `predix-prod` (production). Pas de Docker : migrations SQL manuscrites appliquées via `npm run db:push` sur le projet LIÉ — vérifier le ref affiché ; jamais `supabase config push` (voir en-tête de `supabase/config.toml`). `lib/env.ts` refuse au boot (via `instrumentation.ts`) un déploiement prod branché sur dev.
+**Un seul environnement pour l'instant** (décidé 2026-07-13) : une seule base Supabase (`predix-dev`, ref ryvrxzyztwtjcanlntbj) sert TOUT — local, previews Vercel ET l'URL de prod (predix-taupe.vercel.app). Le projet `predix-prod` (poticedueaaosqvkjrug) reste vide, en réserve pour le vrai lancement Euro 2028 (là on recréera une base propre + on remettra la séparation dev/prod). Migrations SQL manuscrites via `npm run db:push`. Pas de Docker ; jamais `supabase config push`.
 
 ## Règle SQL supplémentaire
 Les policies RLS ne confèrent aucun privilège : chaque migration pose ses **GRANTs explicites** (column-level quand pertinent) dans le même fichier. Écrire `(select auth.uid())`, jamais `auth.uid()` nu, dans les policies.
