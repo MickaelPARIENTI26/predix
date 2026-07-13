@@ -41,14 +41,22 @@ export default async function CompetitionPage({
             {competition.name}
           </h1>
         </div>
-        {isOrganizer && (
+        <div className="flex gap-2">
           <Link
-            href={`/competitions/${id}/manage`}
-            className={buttonVariants({ variant: "outline", size: "sm" })}
+            href={`/competitions/${id}/predict`}
+            className={buttonVariants({ size: "sm" })}
           >
-            Gérer
+            Pronostiquer
           </Link>
-        )}
+          {isOrganizer && (
+            <Link
+              href={`/competitions/${id}/manage`}
+              className={buttonVariants({ variant: "outline", size: "sm" })}
+            >
+              Gérer
+            </Link>
+          )}
+        </div>
       </div>
 
       <Card>

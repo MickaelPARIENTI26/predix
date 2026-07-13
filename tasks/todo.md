@@ -1,16 +1,16 @@
 # Predix — Todo
 
-## Sprint en cours : F3 — Cœur pronostics (LE sprint critique)
+## F3 — Cœur pronostics ✅ (clôturé le 2026-07-13) — LE sprint critique
 
-- [x] Migration 0007 écrite : `prediction_events` (append-only) + `predictions_current` (projection) + `save_prediction` RPC (porte unique) + `prediction_lock_at`/`prediction_competition_id` helpers + trigger d'immuabilité + RLS reveal-after-lock
-- [ ] Revue adversariale approfondie (concurrence, complétude d'audit, RLS) — appliquer + corriger avant push
-- [ ] Appliquer sur la base + tests SQL lourds : frontière de verrou, conflit deux-appareils, rejeu idempotent, invariant `version == count(accepted)`, reconstruction de la projection
-- [ ] Types régénérés
-- [ ] UI : pronostiquer les scores des matchs d'une compétition (par le joueur)
-- [ ] UI : mon historique par match (toutes tentatives)
-- [ ] État verrouillé après coup d'envoi (lecture seule) + confirmation « Enregistré à HH:MM — version N »
-- [ ] Tests e2e : prono + conflit deux onglets + frontière de verrou
-- [ ] Vérification navigateur bout en bout + revue
+- [x] Migration 0007 : `prediction_events` (append-only) + `predictions_current` (projection) + `save_prediction` RPC (porte unique) + helpers lock/competition + trigger immuabilité (BEFORE UPDATE) + RLS (events own-only, projection reveal-after-lock)
+- [x] Revue adversariale approfondie (18 findings, dont 1 BLOCKER overflow) — tout corrigé avant push
+- [x] Tests SQL lourds VERTS : accepté v1→v2, conflit (preuve auto-suffisante), rejeu idempotent, frontière de verrou, invalid/overflow → rejected_invalid, invariant `version == count(accepted)`, immuabilité, confidentialité RLS (ami voit après verrou seulement)
+- [x] Types régénérés ; schéma Zod score + 5 tests unitaires (35 total)
+- [x] UI : `/competitions/[id]/predict` — scores par match, « Enregistrer » explicite, état « Enregistré • vN », verrou au coup d'envoi (lecture seule)
+- [x] Vérification navigateur bout en bout : save v1 → update v2 → **conflit deux-appareils** (UI recharge la valeur gagnante) ; trace d'audit vérifiée en base
+- [ ] (reporté) vue « historique détaillé par match » (toutes tentatives) — l'organisateur/admin en F9 ; le joueur voit sa version actuelle
+
+## Ajouts post-F2 (2026-07-13)
 
 ## Ajouts post-F2 (2026-07-13)
 - [x] Téléphone à l'inscription (migration 0005 : colonne `phone` E.164 + trigger + grant), champ signup + profil, normalisation FR (06/07 → +33), 6 tests ; vérifié : signup stocke `+33788990011`, profil édite/normalise
