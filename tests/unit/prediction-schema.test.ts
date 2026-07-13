@@ -1,5 +1,34 @@
 import { describe, expect, it } from "vitest";
-import { scorePayloadSchema, parseScoreInput } from "@/lib/schemas/prediction";
+import {
+  scorePayloadSchema,
+  parseScoreInput,
+  groupRankingPayloadSchema,
+  isCompleteRanking,
+} from "@/lib/schemas/prediction";
+
+const A = "11111111-1111-4111-8111-111111111111";
+const B = "22222222-2222-4222-8222-222222222222";
+const C = "33333333-3333-4333-8333-333333333333";
+
+describe("groupRankingPayloadSchema", () => {
+  it("accepts an array of uuids", () => {
+    expect(groupRankingPayloadSchema.parse({ ranking: [A, B] }).ranking).toEqual([A, B]);
+  });
+  it("rejects non-uuid elements", () => {
+    expect(groupRankingPayloadSchema.safeParse({ ranking: ["x", B] }).success).toBe(false);
+  });
+});
+
+describe("isCompleteRanking", () => {
+  it("accepts an exact permutation of the group teams", () => {
+    expect(isCompleteRanking([C, A, B], [A, B, C])).toBe(true);
+  });
+  it("rejects wrong size, duplicates, or foreign ids", () => {
+    expect(isCompleteRanking([A, B], [A, B, C])).toBe(false); // too short
+    expect(isCompleteRanking([A, A, B], [A, B, C])).toBe(false); // duplicate
+    expect(isCompleteRanking([A, B, "44444444-4444-4444-8444-444444444444"], [A, B, C])).toBe(false); // foreign
+  });
+});
 
 describe("scorePayloadSchema", () => {
   it("accepts a valid score", () => {

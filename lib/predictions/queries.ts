@@ -33,3 +33,37 @@ export async function getMyScorePredictions(
   }
   return map;
 }
+
+export type MyGroupRanking = {
+  groupId: string;
+  ranking: string[];
+  version: number;
+};
+
+/** The current user's own group-ranking predictions, keyed by group. */
+export async function getMyGroupRankings(
+  competitionId: string
+): Promise<Map<string, MyGroupRanking>> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("predictions_current")
+    .select("target_id, payload, version")
+    .eq("competition_id", competitionId)
+    .eq("target_kind", "group_ranking");
+
+  const map = new Map<string, MyGroupRanking>();
+  for (const row of data ?? []) {
+    const payload = row.payload as { ranking?: unknown };
+    if (
+      Array.isArray(payload?.ranking) &&
+      payload.ranking.every((x) => typeof x === "string")
+    ) {
+      map.set(row.target_id, {
+        groupId: row.target_id,
+        ranking: payload.ranking as string[],
+        version: row.version,
+      });
+    }
+  }
+  return map;
+}

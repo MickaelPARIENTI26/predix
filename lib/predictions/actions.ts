@@ -1,7 +1,10 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { scorePayloadSchema } from "@/lib/schemas/prediction";
+import {
+  scorePayloadSchema,
+  groupRankingPayloadSchema,
+} from "@/lib/schemas/prediction";
 
 export type SaveOutcome =
   | "accepted"
@@ -87,4 +90,47 @@ export async function saveScorePrediction(
     currentPayload: result.current_payload ?? null,
     currentVersion: result.current_version ?? null,
   };
+}
+
+export type SaveGroupRankingInput = {
+  groupId: string;
+  ranking: string[];
+  baseVersion: number | null;
+  eventUuid: string;
+  deviceId: string;
+  clientSentAt: string;
+};
+
+export type SaveRankingResult =
+  | { ok: true; outcome: SaveOutcome; version: number | null }
+  | { ok: false; error: string };
+
+/** Save a group-ranking prediction through the same write door. */
+export async function saveGroupRanking(
+  input: SaveGroupRankingInput
+): Promise<SaveRankingResult> {
+  const parsed = groupRankingPayloadSchema.safeParse({ ranking: input.ranking });
+  if (!parsed.success) return { ok: false, error: "Classement invalide." };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("save_prediction", {
+    p_event_uuid: input.eventUuid,
+    p_kind: "group_ranking",
+    p_target: input.groupId,
+    p_payload: parsed.data,
+    p_base_version: input.baseVersion ?? undefined,
+    p_device_id: input.deviceId,
+    p_client_sent_at: input.clientSentAt,
+  });
+
+  if (error || !data) {
+    return { ok: false, error: "Enregistrement impossible. Réessaie." };
+  }
+
+  const result = data as { outcome: SaveOutcome; version?: number; original_outcome?: SaveOutcome };
+  const effective =
+    result.outcome === "replayed" && result.original_outcome
+      ? result.original_outcome
+      : result.outcome;
+  return { ok: true, outcome: effective, version: result.version ?? null };
 }

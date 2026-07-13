@@ -3,12 +3,20 @@ import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth/user";
 import { getCompetition } from "@/lib/competitions/queries";
 import { getGameData } from "@/lib/competitions/game-queries";
-import { getMyScorePredictions } from "@/lib/predictions/queries";
+import {
+  getMyScorePredictions,
+  getMyGroupRankings,
+} from "@/lib/predictions/queries";
 import {
   PredictClient,
   type PredictMatch,
   type InitialPrediction,
 } from "./predict-client";
+import {
+  GroupRankingClient,
+  type PredictGroup,
+  type InitialRanking,
+} from "./group-ranking-client";
 
 const STAGE_LABELS: Record<string, string> = {
   group: "Phase de groupes",
@@ -29,13 +37,35 @@ export default async function PredictPage({
   const competition = await getCompetition(id, user.id);
   if (!competition) notFound();
 
-  const [game, myPredictions] = await Promise.all([
+  const [game, myPredictions, myRankings] = await Promise.all([
     getGameData(id),
     getMyScorePredictions(id),
+    getMyGroupRankings(id),
   ]);
 
   const teamName = (tid: string | null) =>
     tid ? (game.teams.find((t) => t.id === tid)?.name ?? "?") : "?";
+
+  // Group-ranking targets: each group with its teams + lock = its first kickoff.
+  const groups: PredictGroup[] = game.groups
+    .filter((g) => g.teamIds.length >= 2)
+    .map((g) => {
+      const kickoffs = game.matches
+        .filter((m) => m.group_id === g.id)
+        .map((m) => m.kickoff_at)
+        .sort();
+      return {
+        id: g.id,
+        name: g.name,
+        teams: g.teamIds.map((tid) => ({ id: tid, name: teamName(tid) })),
+        lockAt: kickoffs[0] ?? null,
+      };
+    });
+
+  const initialRankings: Record<string, InitialRanking> = {};
+  for (const [groupId, r] of myRankings) {
+    initialRankings[groupId] = { ranking: r.ranking, version: r.version };
+  }
 
   // Score predictions apply to matches whose two teams are known.
   const matches: PredictMatch[] = game.matches
@@ -64,17 +94,31 @@ export default async function PredictPage({
         </Link>
         <h1 className="text-2xl font-bold tracking-tight">Mes pronostics</h1>
         <p className="text-muted-foreground text-sm">
-          Scores des matchs. Chaque pronostic se verrouille au coup d&apos;envoi.
+          Chaque pronostic se verrouille à son coup d&apos;envoi.
         </p>
       </div>
 
-      {matches.length === 0 ? (
-        <p className="text-muted-foreground text-sm">
-          Aucun match à pronostiquer pour l&apos;instant.
-        </p>
-      ) : (
-        <PredictClient matches={matches} initial={initial} />
+      {groups.length > 0 && (
+        <section className="flex flex-col gap-2">
+          <h2 className="text-lg font-semibold">Classements des groupes</h2>
+          <p className="text-muted-foreground text-sm">
+            Ordonne les équipes de chaque groupe. Verrouillé au 1er match du
+            groupe.
+          </p>
+          <GroupRankingClient groups={groups} initial={initialRankings} />
+        </section>
       )}
+
+      <section className="flex flex-col gap-2">
+        <h2 className="text-lg font-semibold">Scores des matchs</h2>
+        {matches.length === 0 ? (
+          <p className="text-muted-foreground text-sm">
+            Aucun match à pronostiquer pour l&apos;instant.
+          </p>
+        ) : (
+          <PredictClient matches={matches} initial={initial} />
+        )}
+      </section>
     </div>
   );
 }

@@ -598,8 +598,19 @@ export type Database = {
         }
       }
       gen_invite_code: { Args: never; Returns: string }
+      group_standings: {
+        Args: { p_group: string }
+        Returns: {
+          rank: number
+          team_id: string
+        }[]
+      }
       is_competition_member: { Args: { p_comp: string }; Returns: boolean }
       is_competition_organizer: { Args: { p_comp: string }; Returns: boolean }
+      is_valid_group_ranking: {
+        Args: { p_group: string; p_ranking: Json }
+        Returns: boolean
+      }
       join_competition: {
         Args: { p_code: string }
         Returns: {
@@ -653,6 +664,7 @@ export type Database = {
         Args: { p_comp: string; p_config: Json }
         Returns: Json
       }
+      try_uuid: { Args: { p_text: string }; Returns: string }
     }
     Enums: {
       [_ in never]: never
