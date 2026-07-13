@@ -41,6 +41,8 @@ npm run db:push / db:types
 ```
 
 ## Phase actuelle
+F2 — Compétitions & données de jeu : TERMINÉ (2026-07-13). Schéma générique (migration 0004), RPCs create/join, RLS membre/organisateur, page Gérer + génération d'un tournoi de test en 1 clic. Users test dev : demo@predix.app/predixdemo123 (orga), ami@predix.app/amipredix123 (joueur). CSV import reporté à la montée sur l'Euro complet. Prochain : **F3 — Cœur pronostics** (event log + RPC unique `save_prediction`). Historique :
+
 F1 — Auth & profils : TERMINÉ (2026-07-12). Auth email+mot de passe, trigger de création de profil, middleware `proxy.ts`, pages login/signup/profile, flux prouvé en navigateur. Décision en attente côté Mickael : confirmation email (dev a `mailer_autoconfirm: false` + email rate-limité) → désactiver la confirmation au Dashboard OU SMTP custom. Utilisateur démo dev : `demo@predix.app` / `predixdemo123`. Prod : https://predix-taupe.vercel.app · repo github.com/MickaelPARIENTI26/predix · Supabase dev ryvrxzyztwtjcanlntbj / prod poticedueaaosqvkjrug. Prochain sprint : F2 — Compétitions & données de jeu.
 
 ## Auth (F1) — points clés

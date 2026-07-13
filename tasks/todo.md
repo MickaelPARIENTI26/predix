@@ -4,18 +4,19 @@
 
 Cadrage : petit tournoi de test d'abord (schéma générique, aucun nombre en dur).
 
-- [ ] Migration 0004 : `competitions`, `competition_members`, `teams`, `groups`, `group_teams`, `stages`, `matches` + RLS (helpers definer anti-récursion) + RPCs `create_competition`/`join_competition` + trigger owner→organizer
-- [ ] Revue adversariale de la migration (RLS, RPC, intégrité) — appliquer + corriger avant push
-- [ ] Appliquer sur dev + régénérer types
-- [ ] Schémas Zod (nom de compétition, code d'invitation, équipe, groupe, match)
-- [ ] Actions serveur : créer une compétition, rejoindre par code, quitter
-- [ ] UI : tableau de bord « mes compétitions » + création + rejoindre
-- [ ] UI compétition : vue d'ensemble (membres, code d'invitation à partager)
-- [ ] UI organisateur : gérer équipes / groupes / matchs (dates coup d'envoi UTC)
-- [ ] Import CSV du calendrier (équipes + matchs)
-- [ ] Seed : petit tournoi de test (4 groupes de 4 + phase finale simple)
-- [ ] Tests unitaires (schémas) + e2e (créer/rejoindre)
-- [ ] Vérification navigateur bout en bout + revue
+- [x] Migration 0004 : `competitions`/`competition_members`/`teams`/`groups`/`group_teams`/`knockout_stages`/`matches` + RLS (helpers definer anti-récursion) + RPCs `create_competition`/`join_competition` + trigger owner→organizer + triggers d'intégrité inter-compétitions
+- [x] Revue adversariale de la migration (RLS/RPC/intégrité) — 4 findings important corrigés avant push (renommage contrat F3, intégrité inter-compétitions, unicité, RESTRICT owner documenté)
+- [x] Appliquée sur dev + vérifiée (create/join/RLS/intégrité en SQL) + types régénérés
+- [x] Schémas Zod (nom, code d'invitation, équipe, groupe, match) + 8 tests unitaires
+- [x] Actions serveur : créer, rejoindre par code, quitter, supprimer
+- [x] UI hub « mes compétitions » + création + rejoindre
+- [x] UI compétition : vue d'ensemble (membres, code copiable, Gérer/Supprimer/Quitter)
+- [x] UI organisateur : page Gérer (équipes/groupes/matchs) + génération d'un tournoi de test en 1 clic
+- [x] Vérification navigateur bout en bout : création → code → génération (16 équipes, 4 groupes, 32 matchs) ; join + RLS joueur vérifiés en SQL
+- [ ] Import CSV du calendrier — **reporté** : le bouton « tournoi de test » couvre la phase de test ; CSV utile à la montée sur l'Euro complet (51 matchs)
+- [ ] (option) UI de saisie manuelle de match plus riche (sélecteurs équipe + datetime) — minimal pour l'instant
+
+Utilisateurs de test dev : `demo@predix.app`/`predixdemo123` (organisateur), `ami@predix.app`/`amipredix123` (2e joueur pour tester à deux en F3).
 
 ## F1 — Auth & profils ✅ (clôturé le 2026-07-12)
 
