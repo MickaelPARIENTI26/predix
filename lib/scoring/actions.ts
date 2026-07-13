@@ -52,13 +52,9 @@ export async function clearMatchResult(
 
 export async function setScoringRules(
   competitionId: string,
-  exactScore: number,
-  correctOutcome: number
+  config: unknown
 ): Promise<ActionResult> {
-  const parsed = scoringRulesSchema.safeParse({
-    exact_score: exactScore,
-    correct_outcome: correctOutcome,
-  });
+  const parsed = scoringRulesSchema.safeParse(config);
   if (!parsed.success) return { ok: false, error: "Barème invalide." };
 
   const supabase = await createClient();

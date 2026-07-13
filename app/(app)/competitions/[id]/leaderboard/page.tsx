@@ -37,8 +37,10 @@ export default async function LeaderboardPage({
         </Link>
         <h1 className="text-2xl font-bold tracking-tight">Classement</h1>
         <p className="text-muted-foreground text-sm">
-          Score exact : {rules.exact_score} pts · Bon résultat :{" "}
-          {rules.correct_outcome} pt.
+          Groupes : {rules.groups.exact}/{rules.groups.diff}/{rules.groups.outcome} ·
+          Élim. : {rules.knockout.exact}/{rules.knockout.diff}/{rules.knockout.outcome} ·
+          Finale : {rules.final.exact}/{rules.final.diff}/{rules.final.outcome}{" "}
+          <span className="text-xs">(exact/écart/résultat)</span>
         </p>
       </div>
 
@@ -65,8 +67,8 @@ export default async function LeaderboardPage({
                   <span>{r.displayName}</span>
                 </span>
                 <span className="flex items-center gap-3">
-                  <span className="text-muted-foreground text-xs">
-                    {r.exact} exact · {r.outcome} bon
+                  <span className="text-muted-foreground hidden text-xs sm:inline">
+                    {r.exact} exact · {r.diff} écart · {r.outcome} rés.
                   </span>
                   <span className="tabular-nums font-medium">{r.points} pts</span>
                 </span>

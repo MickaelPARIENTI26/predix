@@ -62,11 +62,7 @@ export default async function ResultsPage({
         </p>
       </div>
 
-      <ScoringRulesForm
-        competitionId={id}
-        exactScore={rules.exact_score}
-        correctOutcome={rules.correct_outcome}
-      />
+      <ScoringRulesForm competitionId={id} rules={rules} />
 
       {matches.length === 0 ? (
         <p className="text-muted-foreground text-sm">Aucun match.</p>

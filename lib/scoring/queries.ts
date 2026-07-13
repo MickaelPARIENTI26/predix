@@ -5,6 +5,7 @@ export type LeaderboardRow = {
   displayName: string;
   points: number;
   exact: number;
+  diff: number;
   outcome: number;
 };
 
@@ -35,6 +36,7 @@ export async function getLeaderboard(
     const s = scoreByUser.get(m.user_id);
     const breakdown = (s?.breakdown ?? {}) as {
       exact?: number;
+      diff?: number;
       outcome?: number;
     };
     return {
@@ -42,6 +44,7 @@ export async function getLeaderboard(
       displayName: profile?.display_name ?? "—",
       points: s?.points ?? 0,
       exact: breakdown.exact ?? 0,
+      diff: breakdown.diff ?? 0,
       outcome: breakdown.outcome ?? 0,
     };
   });
@@ -50,9 +53,14 @@ export async function getLeaderboard(
   return rows;
 }
 
-export type ScoringRules = { exact_score: number; correct_outcome: number };
+import {
+  type ScoringRules,
+  type PhaseRules,
+  DEFAULT_PHASE_RULES,
+  SCORING_PHASES,
+} from "@/lib/schemas/scoring";
 
-/** The competition's scoring rules, or the defaults if none set yet. */
+/** The competition's per-phase scoring rules, or the defaults if none set. */
 export async function getScoringRules(
   competitionId: string
 ): Promise<ScoringRules> {
@@ -63,9 +71,15 @@ export async function getScoringRules(
     .eq("competition_id", competitionId)
     .maybeSingle();
 
-  const config = (data?.config ?? {}) as Partial<ScoringRules>;
+  const config = (data?.config ?? {}) as Record<string, Partial<PhaseRules>>;
+  const phase = (key: string): PhaseRules => ({
+    exact: config[key]?.exact ?? DEFAULT_PHASE_RULES.exact,
+    diff: config[key]?.diff ?? DEFAULT_PHASE_RULES.diff,
+    outcome: config[key]?.outcome ?? DEFAULT_PHASE_RULES.outcome,
+  });
   return {
-    exact_score: config.exact_score ?? 3,
-    correct_outcome: config.correct_outcome ?? 1,
+    groups: phase(SCORING_PHASES[0].key),
+    knockout: phase(SCORING_PHASES[1].key),
+    final: phase(SCORING_PHASES[2].key),
   };
 }

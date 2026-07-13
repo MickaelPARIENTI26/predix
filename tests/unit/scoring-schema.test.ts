@@ -1,24 +1,40 @@
 import { describe, expect, it } from "vitest";
 import {
   scoringRulesSchema,
+  phaseRulesSchema,
   matchResultSchema,
   DEFAULT_SCORING_RULES,
+  SCORING_PHASES,
 } from "@/lib/schemas/scoring";
 
-describe("scoringRulesSchema", () => {
-  it("accepts valid rules", () => {
-    expect(scoringRulesSchema.parse({ exact_score: 5, correct_outcome: 2 })).toEqual({
-      exact_score: 5,
-      correct_outcome: 2,
+describe("phaseRulesSchema", () => {
+  it("accepts a valid phase barème", () => {
+    expect(phaseRulesSchema.parse({ exact: 4, diff: 3, outcome: 2 })).toEqual({
+      exact: 4,
+      diff: 3,
+      outcome: 2,
     });
   });
   it("rejects negatives / non-integers / over 100", () => {
-    expect(scoringRulesSchema.safeParse({ exact_score: -1, correct_outcome: 1 }).success).toBe(false);
-    expect(scoringRulesSchema.safeParse({ exact_score: 1.5, correct_outcome: 1 }).success).toBe(false);
-    expect(scoringRulesSchema.safeParse({ exact_score: 101, correct_outcome: 1 }).success).toBe(false);
+    expect(phaseRulesSchema.safeParse({ exact: -1, diff: 3, outcome: 2 }).success).toBe(false);
+    expect(phaseRulesSchema.safeParse({ exact: 1.5, diff: 3, outcome: 2 }).success).toBe(false);
+    expect(phaseRulesSchema.safeParse({ exact: 101, diff: 3, outcome: 2 }).success).toBe(false);
   });
-  it("has sensible defaults", () => {
-    expect(DEFAULT_SCORING_RULES).toEqual({ exact_score: 3, correct_outcome: 1 });
+});
+
+describe("scoringRulesSchema (3 phases)", () => {
+  it("accepts the three phases", () => {
+    expect(scoringRulesSchema.safeParse(DEFAULT_SCORING_RULES).success).toBe(true);
+  });
+  it("rejects a missing phase", () => {
+    expect(
+      scoringRulesSchema.safeParse({ groups: { exact: 4, diff: 3, outcome: 2 } }).success
+    ).toBe(false);
+  });
+  it("defaults are exact 4 / diff 3 / outcome 2 for every phase", () => {
+    for (const p of SCORING_PHASES) {
+      expect(DEFAULT_SCORING_RULES[p.key]).toEqual({ exact: 4, diff: 3, outcome: 2 });
+    }
   });
 });
 
