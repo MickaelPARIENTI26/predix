@@ -1,5 +1,22 @@
 # Predix — Todo
 
+## Sprint en cours : F2 — Compétitions & données de jeu
+
+Cadrage : petit tournoi de test d'abord (schéma générique, aucun nombre en dur).
+
+- [ ] Migration 0004 : `competitions`, `competition_members`, `teams`, `groups`, `group_teams`, `stages`, `matches` + RLS (helpers definer anti-récursion) + RPCs `create_competition`/`join_competition` + trigger owner→organizer
+- [ ] Revue adversariale de la migration (RLS, RPC, intégrité) — appliquer + corriger avant push
+- [ ] Appliquer sur dev + régénérer types
+- [ ] Schémas Zod (nom de compétition, code d'invitation, équipe, groupe, match)
+- [ ] Actions serveur : créer une compétition, rejoindre par code, quitter
+- [ ] UI : tableau de bord « mes compétitions » + création + rejoindre
+- [ ] UI compétition : vue d'ensemble (membres, code d'invitation à partager)
+- [ ] UI organisateur : gérer équipes / groupes / matchs (dates coup d'envoi UTC)
+- [ ] Import CSV du calendrier (équipes + matchs)
+- [ ] Seed : petit tournoi de test (4 groupes de 4 + phase finale simple)
+- [ ] Tests unitaires (schémas) + e2e (créer/rejoindre)
+- [ ] Vérification navigateur bout en bout + revue
+
 ## F1 — Auth & profils ✅ (clôturé le 2026-07-12)
 
 - [x] Migration 0002 : trigger `handle_new_user` (security definer) — profil créé atomiquement à l'inscription
