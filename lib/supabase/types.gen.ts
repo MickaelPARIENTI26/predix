@@ -34,6 +34,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_events: {
+        Row: {
+          actor_user_id: string | null
+          competition_id: string
+          created_at: string
+          detail: Json
+          id: number
+          kind: string
+          target_id: string | null
+        }
+        Insert: {
+          actor_user_id?: string | null
+          competition_id: string
+          created_at?: string
+          detail?: Json
+          id?: never
+          kind: string
+          target_id?: string | null
+        }
+        Update: {
+          actor_user_id?: string | null
+          competition_id?: string
+          created_at?: string
+          detail?: Json
+          id?: never
+          kind?: string
+          target_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_events_actor_user_id_fkey"
+            columns: ["actor_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_events_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       competition_members: {
         Row: {
           competition_id: string
@@ -424,6 +469,81 @@ export type Database = {
         }
         Relationships: []
       }
+      scores: {
+        Row: {
+          breakdown: Json
+          competition_id: string
+          computed_at: string
+          points: number
+          user_id: string
+        }
+        Insert: {
+          breakdown?: Json
+          competition_id: string
+          computed_at?: string
+          points?: number
+          user_id: string
+        }
+        Update: {
+          breakdown?: Json
+          competition_id?: string
+          computed_at?: string
+          points?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scores_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scores_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scoring_rules: {
+        Row: {
+          competition_id: string
+          config: Json
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          competition_id: string
+          config: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          competition_id?: string
+          config?: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scoring_rules_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: true
+            referencedRelation: "competitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scoring_rules_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       teams: {
         Row: {
           code: string | null
@@ -504,6 +624,10 @@ export type Database = {
         Args: { p_kind: string; p_target: string }
         Returns: string
       }
+      recompute_competition_scores: {
+        Args: { p_comp: string }
+        Returns: undefined
+      }
       save_prediction: {
         Args: {
           p_base_version?: number
@@ -514,6 +638,19 @@ export type Database = {
           p_payload: Json
           p_target: string
         }
+        Returns: Json
+      }
+      set_match_result: {
+        Args: {
+          p_away: number
+          p_home: number
+          p_match: string
+          p_status?: string
+        }
+        Returns: Json
+      }
+      set_scoring_rules: {
+        Args: { p_comp: string; p_config: Json }
         Returns: Json
       }
     }
