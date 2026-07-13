@@ -18,8 +18,8 @@ export default async function Home() {
       </div>
       <div className="flex flex-col items-center gap-3">
         {user ? (
-          <Link href="/profile" className={buttonVariants()}>
-            Aller à mon profil
+          <Link href="/competitions" className={buttonVariants()}>
+            Mes compétitions
           </Link>
         ) : (
           <div className="flex gap-3">

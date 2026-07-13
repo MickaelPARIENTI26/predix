@@ -79,7 +79,7 @@ export async function signUp(input: unknown): Promise<SignUpResult> {
   }
 
   // Session present -> confirmations are off, the user is logged in.
-  if (data.session) redirect("/profile");
+  if (data.session) redirect("/competitions");
 
   // No session -> a confirmation email was sent.
   return { ok: true, needsConfirmation: true };

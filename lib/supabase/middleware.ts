@@ -5,7 +5,7 @@ import { getEnv } from "@/lib/env";
 // Paths that require an authenticated user. Extend as the app grows
 // (competitions, predictions, admin…). Route groups like (app) don't appear
 // in the URL, so protection is by real path prefix.
-const PROTECTED_PREFIXES = ["/profile"];
+const PROTECTED_PREFIXES = ["/profile", "/competitions"];
 // Auth pages a logged-in user shouldn't see.
 const AUTH_PATHS = ["/login", "/signup"];
 
@@ -57,7 +57,7 @@ export async function updateSession(
 
   if (user && AUTH_PATHS.includes(pathname)) {
     const url = request.nextUrl.clone();
-    url.pathname = "/profile";
+    url.pathname = "/competitions";
     url.search = "";
     return redirectPreservingCookies(url, response);
   }

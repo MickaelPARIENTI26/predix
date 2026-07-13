@@ -8,7 +8,7 @@
  * survived. Shared by the login action and the /auth/confirm route.
  */
 export function safeNextPath(next: unknown): string {
-  const fallback = "/profile";
+  const fallback = "/competitions";
   if (typeof next !== "string" || next.length === 0) return fallback;
   if (!next.startsWith("/") || next.startsWith("//") || next.includes("\\")) {
     return fallback;

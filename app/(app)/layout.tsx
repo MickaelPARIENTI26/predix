@@ -16,15 +16,22 @@ export default async function AppLayout({
   return (
     <div className="flex min-h-[100dvh] flex-col">
       <header className="flex items-center justify-between border-b px-4 py-3">
-        <Link href="/profile" className="font-bold tracking-tight">
+        <Link href="/competitions" className="font-bold tracking-tight">
           Predix
         </Link>
         <div className="flex items-center gap-3">
-          {profile && (
-            <span className="text-muted-foreground text-sm">
-              {profile.display_name}
-            </span>
-          )}
+          <Link
+            href="/competitions"
+            className="text-muted-foreground hover:text-foreground text-sm"
+          >
+            Compétitions
+          </Link>
+          <Link
+            href="/profile"
+            className="text-muted-foreground hover:text-foreground text-sm"
+          >
+            {profile?.display_name ?? "Profil"}
+          </Link>
           <form action={signOut}>
             <Button type="submit" variant="ghost" size="sm">
               Déconnexion
