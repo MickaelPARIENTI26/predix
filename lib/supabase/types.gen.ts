@@ -276,6 +276,133 @@ export type Database = {
           },
         ]
       }
+      prediction_events: {
+        Row: {
+          base_version: number | null
+          client_sent_at: string | null
+          competition_id: string
+          conflict_current_version: number | null
+          device_id: string | null
+          event_uuid: string
+          id: number
+          lock_at: string | null
+          outcome: string
+          payload: Json
+          previous_payload: Json | null
+          resulting_version: number | null
+          server_received_at: string
+          target_id: string
+          target_kind: string
+          user_id: string
+        }
+        Insert: {
+          base_version?: number | null
+          client_sent_at?: string | null
+          competition_id: string
+          conflict_current_version?: number | null
+          device_id?: string | null
+          event_uuid: string
+          id?: never
+          lock_at?: string | null
+          outcome: string
+          payload: Json
+          previous_payload?: Json | null
+          resulting_version?: number | null
+          server_received_at: string
+          target_id: string
+          target_kind: string
+          user_id: string
+        }
+        Update: {
+          base_version?: number | null
+          client_sent_at?: string | null
+          competition_id?: string
+          conflict_current_version?: number | null
+          device_id?: string | null
+          event_uuid?: string
+          id?: never
+          lock_at?: string | null
+          outcome?: string
+          payload?: Json
+          previous_payload?: Json | null
+          resulting_version?: number | null
+          server_received_at?: string
+          target_id?: string
+          target_kind?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prediction_events_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prediction_events_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      predictions_current: {
+        Row: {
+          competition_id: string
+          last_event_id: number
+          payload: Json
+          target_id: string
+          target_kind: string
+          updated_at: string
+          user_id: string
+          version: number
+        }
+        Insert: {
+          competition_id: string
+          last_event_id: number
+          payload: Json
+          target_id: string
+          target_kind: string
+          updated_at?: string
+          user_id: string
+          version: number
+        }
+        Update: {
+          competition_id?: string
+          last_event_id?: number
+          payload?: Json
+          target_id?: string
+          target_kind?: string
+          updated_at?: string
+          user_id?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "predictions_current_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "predictions_current_last_event_id_fkey"
+            columns: ["last_event_id"]
+            isOneToOne: false
+            referencedRelation: "prediction_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "predictions_current_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -368,6 +495,26 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      prediction_competition_id: {
+        Args: { p_kind: string; p_target: string }
+        Returns: string
+      }
+      prediction_lock_at: {
+        Args: { p_kind: string; p_target: string }
+        Returns: string
+      }
+      save_prediction: {
+        Args: {
+          p_base_version?: number
+          p_client_sent_at?: string
+          p_device_id?: string
+          p_event_uuid: string
+          p_kind: string
+          p_payload: Json
+          p_target: string
+        }
+        Returns: Json
       }
     }
     Enums: {

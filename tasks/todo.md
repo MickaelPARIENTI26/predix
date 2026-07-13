@@ -1,5 +1,17 @@
 # Predix — Todo
 
+## Sprint en cours : F3 — Cœur pronostics (LE sprint critique)
+
+- [x] Migration 0007 écrite : `prediction_events` (append-only) + `predictions_current` (projection) + `save_prediction` RPC (porte unique) + `prediction_lock_at`/`prediction_competition_id` helpers + trigger d'immuabilité + RLS reveal-after-lock
+- [ ] Revue adversariale approfondie (concurrence, complétude d'audit, RLS) — appliquer + corriger avant push
+- [ ] Appliquer sur la base + tests SQL lourds : frontière de verrou, conflit deux-appareils, rejeu idempotent, invariant `version == count(accepted)`, reconstruction de la projection
+- [ ] Types régénérés
+- [ ] UI : pronostiquer les scores des matchs d'une compétition (par le joueur)
+- [ ] UI : mon historique par match (toutes tentatives)
+- [ ] État verrouillé après coup d'envoi (lecture seule) + confirmation « Enregistré à HH:MM — version N »
+- [ ] Tests e2e : prono + conflit deux onglets + frontière de verrou
+- [ ] Vérification navigateur bout en bout + revue
+
 ## Ajouts post-F2 (2026-07-13)
 - [x] Téléphone à l'inscription (migration 0005 : colonne `phone` E.164 + trigger + grant), champ signup + profil, normalisation FR (06/07 → +33), 6 tests ; vérifié : signup stocke `+33788990011`, profil édite/normalise
 - [x] Audit mobile 375px : landing, login, signup, profil, hub, page Gérer (dense) — OK, pas de débordement
