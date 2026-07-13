@@ -20,13 +20,17 @@ export default async function ProfilePage() {
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>Nom affiché</CardTitle>
+          <CardTitle>Mes informations</CardTitle>
           <CardDescription>
-            Le nom que tes amis verront dans les classements.
+            Ton nom apparaît dans les classements ; ton numéro sert aux rappels
+            WhatsApp.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ProfileForm initialName={profile?.display_name ?? ""} />
+          <ProfileForm
+            initialName={profile?.display_name ?? ""}
+            initialPhone={profile?.phone ?? ""}
+          />
         </CardContent>
       </Card>
     </div>

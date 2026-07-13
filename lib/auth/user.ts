@@ -23,6 +23,7 @@ export async function requireUser(): Promise<User> {
 export type ProfileRow = {
   id: string;
   display_name: string;
+  phone: string | null;
   created_at: string;
 };
 
@@ -36,7 +37,7 @@ export async function getProfile(): Promise<ProfileRow | null> {
 
   const { data } = await supabase
     .from("profiles")
-    .select("id, display_name, created_at")
+    .select("id, display_name, phone, created_at")
     .eq("id", user.id)
     .single();
 

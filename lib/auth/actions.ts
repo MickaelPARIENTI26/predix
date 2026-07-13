@@ -61,7 +61,10 @@ export async function signUp(input: unknown): Promise<SignUpResult> {
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
-      data: { display_name: parsed.data.displayName },
+      data: {
+        display_name: parsed.data.displayName,
+        phone: parsed.data.phone,
+      },
       emailRedirectTo: origin ? `${origin}/auth/confirm` : undefined,
     },
   });
@@ -91,10 +94,13 @@ export async function signOut(): Promise<void> {
   redirect("/login");
 }
 
-export async function updateDisplayName(input: unknown): Promise<ActionResult> {
+export async function updateProfile(input: unknown): Promise<ActionResult> {
   const parsed = updateProfileSchema.safeParse(input);
   if (!parsed.success) {
-    return { ok: false, error: parsed.error.issues[0]?.message ?? "Nom invalide." };
+    return {
+      ok: false,
+      error: parsed.error.issues[0]?.message ?? "Informations invalides.",
+    };
   }
 
   const supabase = await createClient();
@@ -105,7 +111,7 @@ export async function updateDisplayName(input: unknown): Promise<ActionResult> {
 
   const { error } = await supabase
     .from("profiles")
-    .update({ display_name: parsed.data.displayName })
+    .update({ display_name: parsed.data.displayName, phone: parsed.data.phone })
     .eq("id", user.id);
 
   if (error) return { ok: false, error: "Enregistrement impossible." };

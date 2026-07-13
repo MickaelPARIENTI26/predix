@@ -64,6 +64,25 @@ export function SignupForm() {
         )}
       </div>
       <div className="flex flex-col gap-1.5">
+        <Label htmlFor="phone">Téléphone</Label>
+        <Input
+          id="phone"
+          name="phone"
+          type="tel"
+          inputMode="tel"
+          autoComplete="tel"
+          placeholder="06 12 34 56 78"
+          required
+        />
+        {errors.phone ? (
+          <p className="text-destructive text-sm">{errors.phone}</p>
+        ) : (
+          <p className="text-muted-foreground text-xs">
+            Pour les rappels WhatsApp avant les matchs.
+          </p>
+        )}
+      </div>
+      <div className="flex flex-col gap-1.5">
         <Label htmlFor="email">Email</Label>
         <Input id="email" name="email" type="email" autoComplete="email" required />
         {errors.email && <p className="text-destructive text-sm">{errors.email}</p>}

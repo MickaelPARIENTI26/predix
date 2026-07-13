@@ -1,6 +1,11 @@
 # Predix — Todo
 
-## Sprint en cours : F2 — Compétitions & données de jeu
+## Ajouts post-F2 (2026-07-13)
+- [x] Téléphone à l'inscription (migration 0005 : colonne `phone` E.164 + trigger + grant), champ signup + profil, normalisation FR (06/07 → +33), 6 tests ; vérifié : signup stocke `+33788990011`, profil édite/normalise
+- [x] Audit mobile 375px : landing, login, signup, profil, hub, page Gérer (dense) — OK, pas de débordement
+- [ ] (F8) envoi WhatsApp réel — le numéro est désormais collecté ; brancher la Cloud API au sprint notifications
+
+## Sprint terminé : F2 — Compétitions & données de jeu
 
 Cadrage : petit tournoi de test d'abord (schéma générique, aucun nombre en dur).
 

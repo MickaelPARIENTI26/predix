@@ -3,18 +3,49 @@ import {
   loginSchema,
   signupSchema,
   updateProfileSchema,
+  normalizePhone,
+  phoneSchema,
   fieldErrors,
 } from "@/lib/schemas/auth";
 
+describe("normalizePhone", () => {
+  it("treats a leading 0 as French (+33)", () => {
+    expect(normalizePhone("06 12 34 56 78")).toBe("+33612345678");
+    expect(normalizePhone("07.98.76.54.32")).toBe("+33798765432");
+  });
+  it("keeps international + numbers", () => {
+    expect(normalizePhone("+44 7911 123456")).toBe("+447911123456");
+  });
+  it("converts 00 prefix to +", () => {
+    expect(normalizePhone("0033612345678")).toBe("+33612345678");
+  });
+  it("rejects junk", () => {
+    expect(normalizePhone("abc")).toBeNull();
+    expect(normalizePhone("123")).toBeNull();
+  });
+});
+
+describe("phoneSchema", () => {
+  it("normalizes valid input", () => {
+    expect(phoneSchema.parse("0612345678")).toBe("+33612345678");
+  });
+  it("rejects invalid input", () => {
+    expect(phoneSchema.safeParse("nope").success).toBe(false);
+    expect(phoneSchema.safeParse("").success).toBe(false);
+  });
+});
+
 describe("signupSchema", () => {
-  it("accepts valid input and normalizes email/display name", () => {
+  it("accepts valid input and normalizes email/display name/phone", () => {
     const parsed = signupSchema.parse({
       displayName: "  Mika  ",
+      phone: "06 12 34 56 78",
       email: "  Mika@Example.COM ",
       password: "supersecret",
     });
     expect(parsed.displayName).toBe("Mika");
     expect(parsed.email).toBe("mika@example.com");
+    expect(parsed.phone).toBe("+33612345678");
   });
 
   it("rejects a short password", () => {
@@ -62,9 +93,13 @@ describe("loginSchema", () => {
 });
 
 describe("updateProfileSchema", () => {
-  it("trims and accepts a valid name", () => {
-    const parsed = updateProfileSchema.parse({ displayName: " Léo " });
+  it("trims and accepts a valid name + phone", () => {
+    const parsed = updateProfileSchema.parse({
+      displayName: " Léo ",
+      phone: "0612345678",
+    });
     expect(parsed.displayName).toBe("Léo");
+    expect(parsed.phone).toBe("+33612345678");
   });
 });
 
