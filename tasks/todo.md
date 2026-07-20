@@ -1,5 +1,14 @@
 # Predix — Todo
 
+## F6 — Bonus & ajustements ✅ (clôturé le 2026-07-20)
+
+- [x] F6a Ajustements manuels (migration 0011) : bonus/malus motivés par l'organisateur (RPC add/remove), recalcul, RLS ; UI panneau + affichage classement
+- [x] F6b Bonus de tournoi (migration 0012) : buteur/passeur/vainqueur via porte générique ; `tournament_players` + `bonus_questions` ; scoring défensif (`try_uuid`) sans re-toucher `save_prediction` ; réponses + verrous par l'organisateur
+- [x] Revue adversariale F6b : validation des réponses, verrou obligatoire, audit — corrigés
+- [x] Vérifié SQL + navigateur (ajustement +5, bonus buteur créé + pronostiqué)
+- [x] gen types cassé (Docker) → types.gen.ts mis à jour à la main
+- Note : les projets Supabase gratuits se mettent en pause après ~1 semaine → réveiller au dashboard
+
 ## F5 — Classements de groupes ✅ (clôturé le 2026-07-13)
 
 - [x] Migration 0010 : pronostics `group_ranking` (ordre des groupes) + `group_standings` (classement auto depuis résultats) + scoring `per_position` + validation à la porte + immunité recalcul (`try_uuid`)
