@@ -27,19 +27,12 @@ export type ProfileRow = {
   created_at: string;
 };
 
-/** The current user's profile row, or null if it somehow doesn't exist yet. */
+/** The current user's profile row, or null if it somehow doesn't exist yet.
+ *  phone is not selectable from the profiles table (it must not leak to other
+ *  users), so the owner reads their own full row through the get_my_profile
+ *  self-only door. */
 export async function getProfile(): Promise<ProfileRow | null> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
-
-  const { data } = await supabase
-    .from("profiles")
-    .select("id, display_name, phone, created_at")
-    .eq("id", user.id)
-    .single();
-
+  const { data } = await supabase.rpc("get_my_profile").maybeSingle();
   return data;
 }

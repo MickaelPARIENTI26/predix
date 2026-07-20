@@ -1,5 +1,27 @@
 # Predix — Todo
 
+## F10 — Durcissement & lancement 🟡 (en cours, 2026-07-20)
+
+Revue de sécurité adversariale croisée **terminée** (12 agents : 4 lentilles RLS/doors/auth/crash + verify). 4 findings confirmés après verify.
+
+### Corrigé — code (prouvé : 53 tests, typecheck, build, lint verts)
+- [x] **(important) Host-header injection** dans le lien de confirmation email. `siteOrigin()` faisait confiance à `x-forwarded-host` quand `NEXT_PUBLIC_SITE_URL` absent (= prod) → pré-hijack de compte. Logique pure `resolveEmailOrigin` (header = local-dev only) + 4 tests + `.env.example`. **Le verifier a confirmé le fix** (finding réfuté comme déjà corrigé)
+- [x] Tie-breaker de classement déterministe (points → exacts → écarts → nom, `lib/scoring/leaderboard.ts`)
+- [x] `getProfile` lit via la RPC `get_my_profile` (couplé à la migration phone ci-dessous) + type ajouté à types.gen.ts
+
+### Corrigé — migrations APPLIQUÉES + VÉRIFIÉES sur predix-dev (7 tests fonctionnels verts, 2026-07-20)
+- [x] **(BLOCKER) Fuite PII `profiles.phone`** — lisible par tout inscrit via l'API. `20260720101000_profile_phone_private` : revoke select table + grant colonnes (id/display_name/created_at) + porte self-only `get_my_profile()`
+- [x] **(important) `matches` DELETE contourne la porte `set_match_result`** — `20260720101500_matches_delete_audit` : trigger AFTER DELETE qui journalise `match_deleted` + recompute quand un match `finished` est supprimé (gardé contre la cascade)
+- [x] **(nit) `is_valid_group_ranking` peut renvoyer NULL** → prono malformé stocké `accepted`. `20260720102000_group_ranking_valid_notnull` : coalesce(..., false) + garde null/array
+- [x] **(nit, hardening) owner ne peut pas quitter** — `20260720100000_owner_cannot_leave` (verifier l'a rétrogradé nit ; gardé comme durcissement DB)
+
+### Reste à faire
+- [x] Vérifié SAFE : casts `::int` sur `scoring_rules.config` (normalisé + recompute in-tx) ; aucun grant `anon`/`public` ; aucun SQL dynamique ; aucune division
+- [x] Checklist de lancement (`docs/launch_checklist.md`)
+- [ ] **Appliquer les 4 migrations** + vérifier contre Postgres (méthode de connexion à confirmer avec Mickael — CLI non liée, pas de db-url)
+- [ ] ⚠️ Coupling : migration phone + code `getProfile` doivent partir ensemble (appliquer migrations PUIS déployer)
+- [ ] Commit F10 (après application + vérif)
+
 ## F9 — Audit & contestations ✅ (clôturé le 2026-07-20)
 
 - [x] Migration 0014 : policy RLS organisateur en lecture sur `prediction_events` (OR avec own-rows ; membres toujours own-only)

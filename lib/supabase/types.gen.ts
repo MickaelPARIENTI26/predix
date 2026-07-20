@@ -745,6 +745,15 @@ export type Database = {
         }
       }
       gen_invite_code: { Args: never; Returns: string }
+      get_my_profile: {
+        Args: never
+        Returns: {
+          id: string
+          display_name: string
+          phone: string | null
+          created_at: string
+        }[]
+      }
       group_standings: {
         Args: { p_group: string }
         Returns: {

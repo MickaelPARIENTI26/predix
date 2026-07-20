@@ -2,12 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import type { LeaderboardRow } from "@/lib/scoring/queries";
+import {
+  compareLeaderboard,
+  type LeaderboardRow,
+} from "@/lib/scoring/leaderboard";
 
 function sortRows(rows: LeaderboardRow[]): LeaderboardRow[] {
-  return [...rows].sort(
-    (a, b) => b.points - a.points || a.displayName.localeCompare(b.displayName)
-  );
+  return [...rows].sort(compareLeaderboard);
 }
 
 export function LeaderboardClient({

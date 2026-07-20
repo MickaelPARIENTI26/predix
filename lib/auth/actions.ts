@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getEnv } from "@/lib/env";
 import { safeNextPath } from "@/lib/auth/safe-redirect";
+import { resolveEmailOrigin } from "@/lib/auth/site-origin";
 import {
   loginSchema,
   signupSchema,
@@ -16,15 +17,15 @@ export type ActionResult =
   | { ok: true }
   | { ok: false; error: string };
 
-// Prefer a trusted, configured origin for emailed links; fall back to request
-// headers only for local dev (never trust x-forwarded-host for security).
+// Origin used to build emailed confirmation/recovery links. See resolveEmailOrigin:
+// the request Host header is only trusted for local dev, never for security.
 async function siteOrigin(): Promise<string> {
-  const configured = getEnv().NEXT_PUBLIC_SITE_URL;
-  if (configured) return configured.replace(/\/$/, "");
   const h = await headers();
-  const proto = h.get("x-forwarded-proto") ?? "https";
-  const host = h.get("x-forwarded-host") ?? h.get("host");
-  return host ? `${proto}://${host}` : "";
+  return resolveEmailOrigin(
+    getEnv().NEXT_PUBLIC_SITE_URL,
+    h.get("x-forwarded-host") ?? h.get("host"),
+    h.get("x-forwarded-proto")
+  );
 }
 
 export async function signIn(

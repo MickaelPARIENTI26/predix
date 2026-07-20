@@ -1,14 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
+import { compareLeaderboard, type LeaderboardRow } from "@/lib/scoring/leaderboard";
 
-export type LeaderboardRow = {
-  userId: string;
-  displayName: string;
-  points: number;
-  exact: number;
-  diff: number;
-  outcome: number;
-  adjustments: number;
-};
+export type { LeaderboardRow };
 
 export type Adjustment = {
   id: number;
@@ -87,7 +80,7 @@ export async function getLeaderboard(
     };
   });
 
-  rows.sort((a, b) => b.points - a.points || a.displayName.localeCompare(b.displayName));
+  rows.sort(compareLeaderboard);
   return rows;
 }
 
