@@ -10,6 +10,7 @@ import {
 import { requireUser } from "@/lib/auth/user";
 import { getCompetition } from "@/lib/competitions/queries";
 import { getLeaderboard, getScoringRules } from "@/lib/scoring/queries";
+import { LeaderboardClient } from "./leaderboard-client";
 
 export default async function LeaderboardPage({
   params,
@@ -48,35 +49,15 @@ export default async function LeaderboardPage({
         <CardHeader>
           <CardTitle className="text-base">Général</CardTitle>
           <CardDescription>
-            Mis à jour à chaque résultat saisi.
+            Mis à jour en direct à chaque résultat.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ol className="flex flex-col">
-            {rows.map((r, i) => (
-              <li
-                key={r.userId}
-                className={`flex items-center justify-between border-b py-2 last:border-0 ${
-                  r.userId === user.id ? "font-semibold" : ""
-                }`}
-              >
-                <span className="flex items-center gap-3">
-                  <span className="text-muted-foreground w-6 text-right tabular-nums">
-                    {i + 1}
-                  </span>
-                  <span>{r.displayName}</span>
-                </span>
-                <span className="flex items-center gap-3">
-                  <span className="text-muted-foreground hidden text-xs sm:inline">
-                    {r.exact} exact · {r.diff} écart · {r.outcome} rés.
-                    {r.adjustments !== 0 &&
-                      ` · ${r.adjustments > 0 ? "+" : ""}${r.adjustments} ajust.`}
-                  </span>
-                  <span className="tabular-nums font-medium">{r.points} pts</span>
-                </span>
-              </li>
-            ))}
-          </ol>
+          <LeaderboardClient
+            competitionId={id}
+            currentUserId={user.id}
+            initialRows={rows}
+          />
         </CardContent>
       </Card>
     </div>
