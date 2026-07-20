@@ -1,5 +1,11 @@
 # Predix — Todo
 
+## F7 — Classement live & finitions ✅ (clôturé le 2026-07-20)
+
+- [x] Migration 0013 : `scores` dans la publication `supabase_realtime` (replica identity full)
+- [x] Classement live : abonnement Realtime + debounce + indicateur « En direct » ; vérifié (+7 par SQL → 9→16 pts sans rafraîchir)
+- [x] Menu burger mobile (header tassé en 375px) ; vérifié en 375px
+
 ## F6 — Bonus & ajustements ✅ (clôturé le 2026-07-20)
 
 - [x] F6a Ajustements manuels (migration 0011) : bonus/malus motivés par l'organisateur (RPC add/remove), recalcul, RLS ; UI panneau + affichage classement
