@@ -1,5 +1,12 @@
 # Predix — Todo
 
+## F9 — Audit & contestations ✅ (clôturé le 2026-07-20)
+
+- [x] Migration 0014 : policy RLS organisateur en lecture sur `prediction_events` (OR avec own-rows ; membres toujours own-only)
+- [x] Page `/audit` (organisateur) : stats (acceptés/tardifs/conflits/invalides), activité complète horodatée avec labels résolus, filtres, journal admin
+- [x] Vérifié navigateur : chaîne France-Brésil (v1→v2→v3 + conflit) lisible, filtre conflits OK
+- Note : F8 (notifications) reporté à la demande de Mickael ; « beaucoup de modifications » prévues ensuite
+
 ## F7 — Classement live & finitions ✅ (clôturé le 2026-07-20)
 
 - [x] Migration 0013 : `scores` dans la publication `supabase_realtime` (replica identity full)
