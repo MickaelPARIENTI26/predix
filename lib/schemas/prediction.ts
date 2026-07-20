@@ -17,6 +17,32 @@ export function parseScoreInput(raw: string): number | null {
   return Number.isInteger(n) && n >= 0 && n <= 99 ? n : null;
 }
 
+/** Bonus payloads: a player pick (top scorer / assists) or a team pick (winner). */
+export const playerBonusPayloadSchema = z.object({
+  player_id: z.string().uuid(),
+});
+export const teamBonusPayloadSchema = z.object({
+  team_id: z.string().uuid(),
+});
+
+export const BONUS_KINDS = [
+  "top_scorer",
+  "top_assists",
+  "tournament_winner",
+] as const;
+export type BonusKind = (typeof BONUS_KINDS)[number];
+
+export const BONUS_LABELS: Record<BonusKind, string> = {
+  top_scorer: "Meilleur buteur",
+  top_assists: "Meilleur passeur",
+  tournament_winner: "Vainqueur",
+};
+
+/** true if the bonus picks a team (winner) rather than a player. */
+export function bonusPicksTeam(kind: BonusKind): boolean {
+  return kind === "tournament_winner";
+}
+
 /** Group-ranking payload: an ordered (best→worst) list of the group's team ids. */
 export const groupRankingPayloadSchema = z.object({
   ranking: z.array(z.string().uuid()).min(2).max(8),

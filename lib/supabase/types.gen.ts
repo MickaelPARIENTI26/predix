@@ -544,6 +544,80 @@ export type Database = {
           },
         ]
       }
+      bonus_questions: {
+        Row: {
+          answer: Json | null
+          competition_id: string
+          created_at: string
+          id: string
+          kind: string
+          lock_at: string | null
+        }
+        Insert: {
+          answer?: Json | null
+          competition_id: string
+          created_at?: string
+          id?: string
+          kind: string
+          lock_at?: string | null
+        }
+        Update: {
+          answer?: Json | null
+          competition_id?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          lock_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bonus_questions_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tournament_players: {
+        Row: {
+          competition_id: string
+          created_at: string
+          id: string
+          name: string
+          team_id: string | null
+        }
+        Insert: {
+          competition_id: string
+          created_at?: string
+          id?: string
+          name: string
+          team_id?: string | null
+        }
+        Update: {
+          competition_id?: string
+          created_at?: string
+          id?: string
+          name?: string
+          team_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tournament_players_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tournament_players_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       manual_adjustments: {
         Row: {
           competition_id: string
@@ -644,6 +718,14 @@ export type Database = {
       }
       remove_manual_adjustment: {
         Args: { p_id: number }
+        Returns: Json
+      }
+      set_bonus_question: {
+        Args: { p_comp: string; p_kind: string; p_lock_at: string }
+        Returns: string
+      }
+      set_bonus_answer: {
+        Args: { p_comp: string; p_kind: string; p_answer: Json }
         Returns: Json
       }
       create_competition: {

@@ -4,7 +4,27 @@ import {
   parseScoreInput,
   groupRankingPayloadSchema,
   isCompleteRanking,
+  playerBonusPayloadSchema,
+  teamBonusPayloadSchema,
+  bonusPicksTeam,
 } from "@/lib/schemas/prediction";
+
+describe("bonus payloads", () => {
+  const U = "11111111-1111-4111-8111-111111111111";
+  it("player bonus needs a uuid player_id", () => {
+    expect(playerBonusPayloadSchema.safeParse({ player_id: U }).success).toBe(true);
+    expect(playerBonusPayloadSchema.safeParse({ player_id: "x" }).success).toBe(false);
+  });
+  it("team bonus needs a uuid team_id", () => {
+    expect(teamBonusPayloadSchema.safeParse({ team_id: U }).success).toBe(true);
+    expect(teamBonusPayloadSchema.safeParse({ player_id: U }).success).toBe(false);
+  });
+  it("only the winner bonus picks a team", () => {
+    expect(bonusPicksTeam("tournament_winner")).toBe(true);
+    expect(bonusPicksTeam("top_scorer")).toBe(false);
+    expect(bonusPicksTeam("top_assists")).toBe(false);
+  });
+});
 
 const A = "11111111-1111-4111-8111-111111111111";
 const B = "22222222-2222-4222-8222-222222222222";

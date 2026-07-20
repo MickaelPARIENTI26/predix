@@ -6,7 +6,9 @@ import { getGameData } from "@/lib/competitions/game-queries";
 import { ResultsClient, type ResultMatch } from "./results-client";
 import { ScoringRulesForm } from "./scoring-rules-form";
 import { AdjustmentsPanel } from "./adjustments-panel";
+import { BonusAdminPanel, type BonusQ } from "./bonus-admin-panel";
 import { getScoringRules, getAdjustments } from "@/lib/scoring/queries";
+import { getBonusQuestions, getTournamentPlayers } from "@/lib/bonus/queries";
 
 const STAGE_LABELS: Record<string, string> = {
   group: "Phase de groupes",
@@ -27,15 +29,29 @@ export default async function ResultsPage({
   const competition = await getCompetition(id, user.id);
   if (!competition || competition.myRole !== "organizer") notFound();
 
-  const [game, rules, adjustments] = await Promise.all([
+  const [game, rules, adjustments, bonusQuestions, players] = await Promise.all([
     getGameData(id),
     getScoringRules(id),
     getAdjustments(id),
+    getBonusQuestions(id),
+    getTournamentPlayers(id),
   ]);
 
   const members = competition.members.map((m) => ({
     userId: m.user_id,
     name: m.display_name,
+  }));
+
+  const teamOptions = game.teams.map((t) => ({ id: t.id, name: t.name }));
+  const playerOptions = players.map((p) => ({
+    id: p.id,
+    name: p.name,
+    teamId: p.teamId,
+  }));
+  const bonusQs: BonusQ[] = bonusQuestions.map((q) => ({
+    kind: q.kind,
+    lockAt: q.lockAt,
+    answerId: q.answer?.player_id ?? q.answer?.team_id ?? null,
   }));
 
   const teamName = (tid: string | null) =>
@@ -75,6 +91,13 @@ export default async function ResultsPage({
         competitionId={id}
         members={members}
         adjustments={adjustments}
+      />
+
+      <BonusAdminPanel
+        competitionId={id}
+        teams={teamOptions}
+        players={playerOptions}
+        questions={bonusQs}
       />
 
       {matches.length === 0 ? (

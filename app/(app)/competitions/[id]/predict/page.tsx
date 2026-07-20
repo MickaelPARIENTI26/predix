@@ -17,6 +17,12 @@ import {
   type PredictGroup,
   type InitialRanking,
 } from "./group-ranking-client";
+import { BonusClient, type BonusItem } from "./bonus-client";
+import {
+  getBonusQuestions,
+  getTournamentPlayers,
+  getMyBonusPredictions,
+} from "@/lib/bonus/queries";
 
 const STAGE_LABELS: Record<string, string> = {
   group: "Phase de groupes",
@@ -37,11 +43,15 @@ export default async function PredictPage({
   const competition = await getCompetition(id, user.id);
   if (!competition) notFound();
 
-  const [game, myPredictions, myRankings] = await Promise.all([
-    getGameData(id),
-    getMyScorePredictions(id),
-    getMyGroupRankings(id),
-  ]);
+  const [game, myPredictions, myRankings, bonusQuestions, players, myBonus] =
+    await Promise.all([
+      getGameData(id),
+      getMyScorePredictions(id),
+      getMyGroupRankings(id),
+      getBonusQuestions(id),
+      getTournamentPlayers(id),
+      getMyBonusPredictions(id),
+    ]);
 
   const teamName = (tid: string | null) =>
     tid ? (game.teams.find((t) => t.id === tid)?.name ?? "?") : "?";
@@ -65,6 +75,18 @@ export default async function PredictPage({
   const initialRankings: Record<string, InitialRanking> = {};
   for (const [groupId, r] of myRankings) {
     initialRankings[groupId] = { ranking: r.ranking, version: r.version };
+  }
+
+  const bonusItems: BonusItem[] = bonusQuestions.map((q) => ({
+    questionId: q.id,
+    kind: q.kind,
+    lockAt: q.lockAt,
+  }));
+  const playerOptions = players.map((p) => ({ id: p.id, name: p.name }));
+  const teamOptions = game.teams.map((t) => ({ id: t.id, name: t.name }));
+  const initialBonus: Record<string, { pick: string; version: number }> = {};
+  for (const [qid, b] of myBonus) {
+    initialBonus[qid] = { pick: b.pick, version: b.version };
   }
 
   // Score predictions apply to matches whose two teams are known.
@@ -97,6 +119,21 @@ export default async function PredictPage({
           Chaque pronostic se verrouille à son coup d&apos;envoi.
         </p>
       </div>
+
+      {bonusItems.length > 0 && (
+        <section className="flex flex-col gap-2">
+          <h2 className="text-lg font-semibold">Bonus</h2>
+          <p className="text-muted-foreground text-sm">
+            Meilleur buteur, meilleur passeur, vainqueur du tournoi.
+          </p>
+          <BonusClient
+            questions={bonusItems}
+            players={playerOptions}
+            teams={teamOptions}
+            initial={initialBonus}
+          />
+        </section>
+      )}
 
       {groups.length > 0 && (
         <section className="flex flex-col gap-2">
