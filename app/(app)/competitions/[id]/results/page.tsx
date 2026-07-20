@@ -5,7 +5,8 @@ import { getCompetition } from "@/lib/competitions/queries";
 import { getGameData } from "@/lib/competitions/game-queries";
 import { ResultsClient, type ResultMatch } from "./results-client";
 import { ScoringRulesForm } from "./scoring-rules-form";
-import { getScoringRules } from "@/lib/scoring/queries";
+import { AdjustmentsPanel } from "./adjustments-panel";
+import { getScoringRules, getAdjustments } from "@/lib/scoring/queries";
 
 const STAGE_LABELS: Record<string, string> = {
   group: "Phase de groupes",
@@ -26,10 +27,16 @@ export default async function ResultsPage({
   const competition = await getCompetition(id, user.id);
   if (!competition || competition.myRole !== "organizer") notFound();
 
-  const [game, rules] = await Promise.all([
+  const [game, rules, adjustments] = await Promise.all([
     getGameData(id),
     getScoringRules(id),
+    getAdjustments(id),
   ]);
+
+  const members = competition.members.map((m) => ({
+    userId: m.user_id,
+    name: m.display_name,
+  }));
 
   const teamName = (tid: string | null) =>
     tid ? (game.teams.find((t) => t.id === tid)?.name ?? "?") : "?";
@@ -63,6 +70,12 @@ export default async function ResultsPage({
       </div>
 
       <ScoringRulesForm competitionId={id} rules={rules} />
+
+      <AdjustmentsPanel
+        competitionId={id}
+        members={members}
+        adjustments={adjustments}
+      />
 
       {matches.length === 0 ? (
         <p className="text-muted-foreground text-sm">Aucun match.</p>

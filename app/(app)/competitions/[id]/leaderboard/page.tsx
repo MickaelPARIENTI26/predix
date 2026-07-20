@@ -69,6 +69,8 @@ export default async function LeaderboardPage({
                 <span className="flex items-center gap-3">
                   <span className="text-muted-foreground hidden text-xs sm:inline">
                     {r.exact} exact · {r.diff} écart · {r.outcome} rés.
+                    {r.adjustments !== 0 &&
+                      ` · ${r.adjustments > 0 ? "+" : ""}${r.adjustments} ajust.`}
                   </span>
                   <span className="tabular-nums font-medium">{r.points} pts</span>
                 </span>

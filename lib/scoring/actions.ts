@@ -50,6 +50,43 @@ export async function clearMatchResult(
   return { ok: true };
 }
 
+export async function addAdjustment(
+  competitionId: string,
+  memberUserId: string,
+  points: number,
+  reason: string
+): Promise<ActionResult> {
+  if (!Number.isInteger(points) || points < -1000 || points > 1000) {
+    return { ok: false, error: "Points invalides (−1000 à 1000)." };
+  }
+  if (reason.trim().length === 0) {
+    return { ok: false, error: "Motif obligatoire." };
+  }
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("add_manual_adjustment", {
+    p_comp: competitionId,
+    p_member: memberUserId,
+    p_points: points,
+    p_reason: reason.trim(),
+  });
+  if (error) return { ok: false, error: "Ajustement impossible." };
+  revalidate(competitionId);
+  return { ok: true };
+}
+
+export async function removeAdjustment(
+  competitionId: string,
+  adjustmentId: number
+): Promise<ActionResult> {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("remove_manual_adjustment", {
+    p_id: adjustmentId,
+  });
+  if (error) return { ok: false, error: "Suppression impossible." };
+  revalidate(competitionId);
+  return { ok: true };
+}
+
 export async function setScoringRules(
   competitionId: string,
   config: unknown

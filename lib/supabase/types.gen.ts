@@ -544,6 +544,58 @@ export type Database = {
           },
         ]
       }
+      manual_adjustments: {
+        Row: {
+          competition_id: string
+          created_at: string
+          created_by: string | null
+          id: number
+          member_user_id: string
+          points: number
+          reason: string
+        }
+        Insert: {
+          competition_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: number
+          member_user_id: string
+          points: number
+          reason: string
+        }
+        Update: {
+          competition_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: number
+          member_user_id?: string
+          points?: number
+          reason?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "manual_adjustments_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "manual_adjustments_member_user_id_fkey"
+            columns: ["member_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "manual_adjustments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       teams: {
         Row: {
           code: string | null
@@ -581,6 +633,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_manual_adjustment: {
+        Args: {
+          p_comp: string
+          p_member: string
+          p_points: number
+          p_reason: string
+        }
+        Returns: Json
+      }
+      remove_manual_adjustment: {
+        Args: { p_id: number }
+        Returns: Json
+      }
       create_competition: {
         Args: { p_name: string }
         Returns: {

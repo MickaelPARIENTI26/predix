@@ -7,7 +7,43 @@ export type LeaderboardRow = {
   exact: number;
   diff: number;
   outcome: number;
+  adjustments: number;
 };
+
+export type Adjustment = {
+  id: number;
+  memberUserId: string;
+  memberName: string;
+  points: number;
+  reason: string;
+  createdAt: string;
+};
+
+/** Manual bonus/malus adjustments for a competition (members can read). */
+export async function getAdjustments(
+  competitionId: string
+): Promise<Adjustment[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("manual_adjustments")
+    .select(
+      "id, member_user_id, points, reason, created_at, profiles(display_name)"
+    )
+    .eq("competition_id", competitionId)
+    .order("created_at", { ascending: false });
+
+  return (data ?? []).map((a) => {
+    const profile = a.profiles as unknown as { display_name: string } | null;
+    return {
+      id: a.id,
+      memberUserId: a.member_user_id,
+      memberName: profile?.display_name ?? "—",
+      points: a.points,
+      reason: a.reason,
+      createdAt: a.created_at,
+    };
+  });
+}
 
 /** Members ranked by points. scores is a cache (populated on first recompute);
  *  we left-merge members so everyone appears — at 0 before any result. */
@@ -38,6 +74,7 @@ export async function getLeaderboard(
       exact?: number;
       diff?: number;
       outcome?: number;
+      adjustments?: number;
     };
     return {
       userId: m.user_id,
@@ -46,6 +83,7 @@ export async function getLeaderboard(
       exact: breakdown.exact ?? 0,
       diff: breakdown.diff ?? 0,
       outcome: breakdown.outcome ?? 0,
+      adjustments: breakdown.adjustments ?? 0,
     };
   });
 
