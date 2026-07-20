@@ -63,6 +63,12 @@ export default async function CompetitionPage({
                 Résultats
               </Link>
               <Link
+                href={`/competitions/${id}/audit`}
+                className={buttonVariants({ variant: "outline", size: "sm" })}
+              >
+                Audit
+              </Link>
+              <Link
                 href={`/competitions/${id}/manage`}
                 className={buttonVariants({ variant: "outline", size: "sm" })}
               >
